@@ -1,19 +1,31 @@
 
-#include <Eigen/Dense>
+#include <Interp/All>
+#include <algorithm>
+#include <cmath>
+#include <fstream>
 #include <iostream>
-
-#include "Interp/Core"
-
-
+#include <iterator>
+#include <vector>
 
 int main() {
+  using namespace Interp;
 
-  using complex = std::complex<double>;
-  using Matrix = Eigen::Matrix<complex, Eigen::Dynamic, Eigen::Dynamic>;
+  int n = 10;
+  std::vector<double> x(n), y(n);
 
-  auto a = Matrix(5,5);
+  auto func = [](double x) { return std::sin(x); };
 
-  std::cout << a << std::endl;
-  
+  for (int i = 0; i < n; i++) {
+    x[i] = static_cast<double>(i) / static_cast<double>(n - 1);
+    y[i] = func(x[i]);
+  }
 
+  CubicSpline f(x.begin(), x.end(), y.begin());
+
+  int m = 50;
+  std::ofstream file("CubicSpline.out");
+  for (int i = 0; i < m; i++) {
+    auto x = static_cast<double>(i) / static_cast<double>(m - 1);
+    file << x << " " << func(x) << " " << f(x) << std::endl;
+  }
 }
