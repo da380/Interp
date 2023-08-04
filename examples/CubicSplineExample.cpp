@@ -14,6 +14,7 @@ int main() {
   auto a = Matrix(5,5);
 
   std::cout << a << std::endl;
-  
+
+  std::cout << "Hello\n";
 
 }
