@@ -1,7 +1,7 @@
 # Interp
 
 
-c++ header-only template library for iterpolation. Linear algebra done using Eigen3. 
+c++ header-only template library for iterpolation. Linear algebra done using Eigen3.
 
 
 

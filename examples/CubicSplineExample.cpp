@@ -21,11 +21,6 @@ int main() {
   }
 
   CubicSpline f(x.begin(), x.end(), y.begin());
+  std::cout << a << std::endl;
 
-  int m = 50;
-  std::ofstream file("CubicSpline.out");
-  for (int i = 0; i < m; i++) {
-    auto x = static_cast<double>(i) / static_cast<double>(m - 1);
-    file << x << " " << func(x) << " " << f(x) << std::endl;
-  }
-}
+
