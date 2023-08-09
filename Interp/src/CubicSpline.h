@@ -89,16 +89,28 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
      i = 0;
      x_value_type mu;
      for (idx = xStart; idx < xFinish - 2; idx++) {
-          mu = (*(idx + 1) - *idx) / (*(idx + 2) - *idx);
-          // std::cout << mu << std::endl;
-          // std::cout << *(idx + 2) << std::endl;
-          myRHS(i) = 6.0 *
-                     (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) / (1.0 - mu)) *
-                     mu / ((*(idx + 1) - *idx) * (*(idx + 1) - *idx));
-          // std::cout << (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) / (1 - mu))
+          // mu = (*(idx + 1) - *idx) / (*(idx + 2) - *idx);
+          // // std::cout << mu << std::endl;
+          // // std::cout << *(idx + 2) << std::endl;
+          // myRHS(i) = 6.0 *
+          //            (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) / (1.0 - mu))
+          //            * mu / ((*(idx + 1) - *idx) * (*(idx + 1) - *idx));
+          // std::cout << (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) / (1 -
+          // mu))
           // << std::endl;
           // std::cout << *idx + (mu * (*(idx + 2)) - *(idx + 1)) / (1.0 - mu)
           //           << std::endl;
+
+          mu = (*(xStart + i + 1) - *(xStart + i)) /
+               (*(xStart + i + 2) - *(xStart + i));
+          // std::cout << mu << std::endl;
+          myRHS(i) =
+              6.0 *
+              (*(yStart + i) +
+               (mu * (*(yStart + i + 2)) - *(yStart + i + 1)) / (1.0 - mu)) *
+              mu /
+              ((*(xStart + i + 1) - *(xStart + i)) *
+               (*(xStart + i + 1) - *(xStart + i)));
 
           i += 1;
      };
@@ -127,7 +139,9 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
           ypp(i + 1) = ypps(i);
      }
      // std::cout << "Hello, testing 2" << std::endl;
-     // std::cout << ypp << std::endl;
+     // std::cout << mymatM << std::endl;
+     // std::cout << myRHS << std::endl;
+     std::cout << ypps << std::endl;
 };
 
 // template <typename xIter, typename yIter>
@@ -174,7 +188,7 @@ CubicSpline<xIter, yIter>::operator()(x_value_type x) {
      auto c = ypp(i) / 2.0;
      auto d = (ypp(i + 1) - ypp(i)) / (6.0 * (*iter - *(iter - 1)));
      auto xdiff = x - *(iter - 1);
-     auto yval = a + (b + xdiff * (c + d * xdiff)) * xdiff;
+     auto yval = a + xdiff * (b + xdiff * (c + d * xdiff));
      return yval;
 };
 

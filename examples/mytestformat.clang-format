@@ -1,4 +1,4 @@
-UseTab: 10
+UseTab: 5
 IndentWidth: 5
 BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: false
