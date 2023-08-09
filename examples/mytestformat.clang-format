@@ -1,0 +1,6 @@
+UseTab: 5
+IndentWidth: 5
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+ColumnLimit: 0
