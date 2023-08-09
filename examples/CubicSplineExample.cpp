@@ -14,6 +14,7 @@ main() {
      int n = 11;
      std::vector<double> x(n), y(n);
      double xtest;
+     std::string bcarg;
 
      // auto func = [](double x) { return std::sin(x); };
 
@@ -32,7 +33,8 @@ main() {
      // }
      // std::cout << x[0] << std::endl;
      // std::cout << x[10] << std::endl;
-     CubicSpline f(x.begin(), x.end(), y.begin());
+     bcarg = "natural";
+     CubicSpline f(x.begin(), x.end(), y.begin(), "clamped", 0, "clamped", 20);
      xtest = 0.65;
      // std::cout << f(xtest) << std::endl;
      // std::cout << xtest * xtest << std::endl;

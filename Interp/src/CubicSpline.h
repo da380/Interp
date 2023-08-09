@@ -5,6 +5,8 @@
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/LU>
 #include <iostream>
+#include <optional>
+#include <string>
 #include <vector>
 
 namespace Interp {
@@ -16,7 +18,14 @@ class CubicSpline {
      using x_value_type = xIter::value_type;
      using y_value_type = yIter::value_type;
 
-     // Declare the constructor.
+     // Declare the full constructor.
+     CubicSpline(xIter, xIter, yIter, std::string, y_value_type, std::string,
+                 y_value_type);
+
+     // Declare the constructor with same at both ends
+     CubicSpline(xIter, xIter, yIter, std::string, y_value_type, y_value_type);
+
+     // Declare the constructor without final three arguments
      CubicSpline(xIter, xIter, yIter);
 
      // Declare the application operator.
@@ -38,10 +47,25 @@ template <typename xIter, typename yIter>
 CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
                                        yIter yStart)
     : xStart{xStart}, xFinish{xFinish}, yStart{yStart} {
-     // VectorX deltah;
-     // VectorX mu;
+     CubicSpline(xStart, xFinish, yStart, "natural", 0.0, "natural", 0.0);
+};
+
+template <typename xIter, typename yIter>
+CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
+                                       yIter yStart, std::string bcarg,
+                                       y_value_type lowbc, y_value_type upbc)
+    : xStart{xStart}, xFinish{xFinish}, yStart{yStart} {
+     CubicSpline(xStart, xFinish, yStart, bcarg, lowbc, bcarg, upbc);
+};
+
+template <typename xIter, typename yIter>
+CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
+                                       yIter yStart, std::string lbcarg,
+                                       y_value_type lowbc, std::string ubcarg,
+                                       y_value_type upbc)
+    : xStart{xStart}, xFinish{xFinish}, yStart{yStart} {
      xIter idx;
-     int i, j, mylen;
+     int i, j, mylen, ilen;
      const int mylen2 = xFinish - xStart;
      // int matlength = std::distance(xStart, xFinish) - 2;
 
@@ -51,6 +75,7 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
      i = 0;
      j = 0;
      // mylen = 0;
+     ilen = xFinish - xStart;
      for (idx = xStart + 1; idx < xFinish - 1; idx++) {
           j += 1;
      };
@@ -93,12 +118,15 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
           // // std::cout << mu << std::endl;
           // // std::cout << *(idx + 2) << std::endl;
           // myRHS(i) = 6.0 *
-          //            (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) / (1.0 - mu))
-          //            * mu / ((*(idx + 1) - *idx) * (*(idx + 1) - *idx));
-          // std::cout << (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) / (1 -
-          // mu))
+          //            (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) /
+          //            (1.0 - mu))
+          //            * mu / ((*(idx + 1) - *idx) * (*(idx + 1) -
+          //            *idx));
+          // std::cout << (*(idx) + (mu * (*(idx + 2)) - *(idx + 1)) /
+          // (1 - mu))
           // << std::endl;
-          // std::cout << *idx + (mu * (*(idx + 2)) - *(idx + 1)) / (1.0 - mu)
+          // std::cout << *idx + (mu * (*(idx + 2)) - *(idx + 1)) /
+          // (1.0 - mu)
           //           << std::endl;
 
           mu = (*(xStart + i + 1) - *(xStart + i)) /
@@ -119,6 +147,8 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
      //  std::cout << mymatM << std::endl;
      //  std::cout << myRHS << std::endl;
 
+     // if the requirement is for clamped bcs:
+
      // finding ypp
      ypp.resize(mylen + 2);
      // const int mylenlu = ypp.size();
@@ -128,20 +158,82 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
 
      // std::cout << xFinish - xStart << std::endl;
      //  ypp = mymatM.partialPivLu().solve(myRHS);
+
+     // checking what type of cubic interpolant it wants:
+     if (!lbcarg.compare("natural")) {
+          // std::cout << "Cubic spline calculated with natural BC \n";
+          ypp(0) = lowbc;
+          myRHS(0) = myRHS(0) - (1.0 - mymatM(0, 1)) * lowbc;
+
+     } else if (!lbcarg.compare("clamped")) {
+          // std::cout << "Cubic spline calculated with clamped BC \n";
+          mymatM(0, 0) = 1.5 + 0.5 * mymatM(0, 1);
+
+          myRHS(0) = myRHS(0) + 3 * (1 - mymatM(0, 1)) /
+                                    (*(xStart + 1) - *xStart) *
+                                    (lowbc - (*(yStart + 1) - *yStart) /
+                                                 (*(xStart + 1) - *xStart));
+
+     } else {
+          std::cout << "Please check lower BC! Cubic spline calculated with "
+                       "natural BC \n";
+     }
+     if (!ubcarg.compare("natural")) {
+          // std::cout << "Cubic spline calculated with natural BC \n";
+
+          ypp(mylen + 1) = upbc;
+          myRHS(mylen - 1) =
+              myRHS(mylen - 1) - (1.0 - mymatM(mylen - 1, mylen - 2)) * upbc;
+
+     } else if (!ubcarg.compare("clamped")) {
+          // std::cout << "Cubic spline calculated with clamped BC \n";
+          // mymatM(0, 0) = 1.5 + 0.5 * mymatM(0, 1);
+          mymatM(mylen - 1, mylen - 1) =
+              1.5 + 0.5 * mymatM(mylen - 1, mylen - 2);
+          // myRHS(0) = myRHS(0) + 3 * (1 - mymatM(0, 1)) /
+          //                           (*(xStart + 1) - *xStart) *
+          //                           (lowbc - (*(yStart + 1) - *yStart) /
+          //                                        (*(xStart + 1) - *xStart));
+          myRHS(mylen - 1) =
+              myRHS(mylen - 1) +
+              3 * (1 - mymatM(mylen - 1, mylen - 2)) /
+                  (*(xFinish - 1) - *(xFinish - 2)) *
+                  ((*(yStart + ilen - 1) - *(yStart + ilen - 2)) /
+                       (*(xFinish - 1) - *(xFinish - 2)) -
+                   upbc);
+     } else {
+          std::cout << "Please check BC! Cubic spline calculated with "
+                       "natural BC \n";
+     }
+
      Eigen::FullPivLU<
          Eigen::Matrix<x_value_type, Eigen::Dynamic, Eigen::Dynamic> >
          dec(mymatM);
      // std::cout << "Hello, testing" << std::endl;
      Eigen::Matrix<y_value_type, Eigen::Dynamic, 1> ypps = dec.solve(myRHS);
-     ypp(0) = 0.0;
-     ypp(mylen + 1) = 0.0;
-     for (i = 0; i < mylen; i++) {
-          ypp(i + 1) = ypps(i);
-     }
+
+     // for (i = 0; i < mylen; i++) {
+     //      ypp(i + 1) = ypps(i);
+     // }
+     ypp.segment(1, mylen) = ypps;
      // std::cout << "Hello, testing 2" << std::endl;
      // std::cout << mymatM << std::endl;
      // std::cout << myRHS << std::endl;
-     std::cout << ypps << std::endl;
+
+     if (!lbcarg.compare("clamped")) {
+          ypp(0) = -0.5 * ypp(1) +
+                   3.0 / (*(xStart + 1) - *xStart) *
+                       ((*(yStart + 1) - *yStart) / (*(xStart + 1) - *xStart) -
+                        lowbc);
+     }
+     if (!ubcarg.compare("clamped")) {
+          ypp(mylen + 1) =
+              -0.5 * ypp(mylen) +
+              3.0 / (*(xFinish - 1) - *(xFinish - 2)) *
+                  (upbc - (*(yStart + ilen - 1) - *(yStart + ilen - 2)) /
+                              (*(xFinish - 1) - *(xFinish - 2)));
+     }
+     // std::cout << ypp << std::endl;
 };
 
 // template <typename xIter, typename yIter>
