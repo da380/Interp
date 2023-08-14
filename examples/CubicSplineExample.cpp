@@ -28,7 +28,7 @@ main() {
           x[i] = static_cast<double>(i) / static_cast<double>(n - 1);
           y[i] = x[i];
           z[i] = x[i] * x[i];
-          w[i] = 1.1 * x[i] * z[i] - 2 * z[i] + y[i];
+          w[i] = x[i] * z[i] - z[i] + y[i];
           // std::cout << x[i] << std::endl;
      }
 
@@ -71,7 +71,8 @@ main() {
      for (int i = 0; i < n2; i++) {
           // MyFile << std::fixed;
           MyFile << xx[i] << ";";
-          MyFile << o(xx[i]) << std::endl;
+          // MyFile << w[i] << ":";
+          MyFile << p(xx[i]) << std::endl;
 
           // MyFile << xx[i];
           // MyFile << f(xx[i]) << std::endl;
