@@ -221,8 +221,10 @@ CubicSpline<xIter, yIter>::operator()(x_value_type x) {
           std::cout << "The x value lies below the domain!" << std::endl;
           return *yStart;
      }
-     if (x > *(xFinish - 1)) {
-          std::cout << "The x value lies above the domain!" << std::endl;
+     if (iter == xFinish) {
+          if (x > *(xFinish - 1)) {
+               std::cout << "The x value lies above the domain!" << std::endl;
+          };
           auto j = xFinish - xStart;
           return *(yStart + j - 1);
      }
