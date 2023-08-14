@@ -1,7 +1,9 @@
 #ifndef INTERP_CORE_MODULE_H
 #define INTERP_CORE_MODULE_H
 
-// Header files to be included to use the Interp library.
+// Header files to be included to use the Interp library
+#include "src/Concepts.h"
+#include "src/Linear.h"
 #include "src/CubicSpline.h"
 
 #endif  
