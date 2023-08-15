@@ -148,28 +148,26 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xStart, xIter xFinish,
 
 // Evaluation of the interpolating function.
 template <typename xIter, typename yIter>
-CubicSpline<xIter, yIter>::y_value_t
-CubicSpline<xIter, yIter>::operator()(x_value_t x) const {
-     // Find the first element larger than x.
-     auto iter = std::upper_bound(xStart, xFinish, x);
-     // Adjust the iterator if out of range.
-     if (iter == xStart)
-          ++iter;
-     if (iter == xFinish)
-          --iter;
-     // Perform the interpolation.
-     constexpr auto oneSixth =
-         static_cast<x_value_t>(1) / static_cast<x_value_t>(6);
-     auto i2 = std::distance(xStart, iter);
-     auto i1 = i2 - 1;
-     auto x1 = xStart[i1];
-     auto x2 = xStart[i2];
-     auto h = x2 - x1;
-     auto a = (x2 - x) / h;
-     auto b = (x - x1) / h;
-     return a * yStart[i1] + b * yStart[i2] +
-            ((a * a * a - a) * ypp(i1) + (b * b * b - b) * ypp(i2)) *
-                (h * h * oneSixth);
+CubicSpline<xIter, yIter>::y_value_t CubicSpline<xIter, yIter>::operator()(
+    x_value_t x) const {
+  // Find the first element larger than x.
+  auto iter = std::upper_bound(xStart, xFinish, x);
+  // Adjust the iterator if out of range.
+  if (iter == xStart) ++iter;
+  if (iter == xFinish) --iter;
+  // Perform the interpolation.
+  constexpr auto oneSixth =
+      static_cast<x_value_t>(1) / static_cast<x_value_t>(6);
+  auto i2 = std::distance(xStart, iter);
+  auto i1 = i2 - 1;
+  auto x1 = xStart[i1];
+  auto x2 = xStart[i2];
+  auto h = x2 - x1;
+  auto a = (x2 - x) / h;
+  auto b = (x - x1) / h;
+  return a * yStart[i1] + b * yStart[i2] +
+         ((a * a * a - a) * ypp(i1) + (b * b * b - b) * ypp(i2)) *
+             (h * h * oneSixth);
 };
 
 }   // namespace Interp

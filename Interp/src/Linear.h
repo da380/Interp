@@ -36,23 +36,22 @@ Linear<xIter, yIter>::Linear(xIter xStart, xIter xFinish, yIter yStart)
     : xStart{xStart}, xFinish{xFinish}, yStart{yStart} {}
 
 template <typename xIter, typename yIter>
-Linear<xIter, yIter>::y_value_t
-Linear<xIter, yIter>::operator()(const x_value_t x) const {
-     // Find first element larger than x.
-     auto iter = std::upper_bound(xStart, xFinish, x);
-     // Adjust the iterator if out of range.
-     if (iter == xStart)
-          ++iter;
-     if (iter == xFinish)
-          --iter;
-     // Perform the interpolation.
-     auto i2 = std::distance(xStart, iter);
-     auto i1 = i2 - 1;
-     auto x1 = xStart[i1];
-     auto x2 = xStart[i2];
-     auto y1 = yStart[i1];
-     auto y2 = yStart[i2];
-     return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+Linear<xIter, yIter>::y_value_t Linear<xIter, yIter>::operator()(
+    const x_value_t x) const {
+  // Find first element larger than x.
+  auto iter = std::upper_bound(xStart, xFinish, x);
+  // Adjust the iterator if out of range.
+  if (iter == xStart) ++iter;
+  if (iter == xFinish) --iter;
+  // Perform the interpolation.
+  auto i2 = std::distance(xStart, iter);
+  auto i1 = i2 - 1;
+  auto x1 = xStart[i1];
+  auto x2 = xStart[i2];
+  auto h = x2 - x1;
+  auto a = (x2 - x) / h;
+  auto b = (x - x1) / h;
+  return a * yStart[i1] + b * yStart[i2];
 }
 
 }   // namespace Interp
