@@ -13,45 +13,45 @@ namespace Interp {
 template <typename xIter, typename yIter>
 requires InterpolationIteratorPair<xIter, yIter>
 class Linear {
-    public:
-     // Define some class member types
-     using x_value_t = std::iter_value_t<xIter>;
-     using y_value_t = std::iter_value_t<yIter>;
+ public:
+  // Define some class member types
+  using x_value_t = std::iter_value_t<xIter>;
+  using y_value_t = std::iter_value_t<yIter>;
 
-     // Declare the constructor.
-     Linear(xIter, xIter, yIter);
+  // Declare the constructor.
+  Linear(xIter, xIter, yIter);
 
-     // Declare the application operator.
-     y_value_t operator()(x_value_t) const;
+  // Declare the application operator.
+  y_value_t operator()(x_value_t) const;
 
-    private:
-     // Iterators to the function data.
-     xIter xStart;
-     xIter xFinish;
-     yIter yStart;
+ private:
+  // Iterators to the function data.
+  xIter xS;
+  xIter xF;
+  yIter yS;
 };
 
 template <typename xIter, typename yIter>
-Linear<xIter, yIter>::Linear(xIter xStart, xIter xFinish, yIter yStart)
-    : xStart{xStart}, xFinish{xFinish}, yStart{yStart} {}
+Linear<xIter, yIter>::Linear(xIter xS, xIter xF, yIter yS)
+    : xS{xS}, xF{xF}, yS{yS} {}
 
 template <typename xIter, typename yIter>
 Linear<xIter, yIter>::y_value_t Linear<xIter, yIter>::operator()(
     const x_value_t x) const {
   // Find first element larger than x.
-  auto iter = std::upper_bound(xStart, xFinish, x);
+  auto iter = std::upper_bound(xS, xF, x);
   // Adjust the iterator if out of range.
-  if (iter == xStart) ++iter;
-  if (iter == xFinish) --iter;
+  if (iter == xS) ++iter;
+  if (iter == xF) --iter;
   // Perform the interpolation.
-  auto i2 = std::distance(xStart, iter);
+  auto i2 = std::distance(xS, iter);
   auto i1 = i2 - 1;
-  auto x1 = xStart[i1];
-  auto x2 = xStart[i2];
+  auto x1 = xS[i1];
+  auto x2 = xS[i2];
   auto h = x2 - x1;
   auto a = (x2 - x) / h;
   auto b = (x - x1) / h;
-  return a * yStart[i1] + b * yStart[i2];
+  return a * yS[i1] + b * yS[i2];
 }
 
 }   // namespace Interp
