@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <concepts>
+#include <iterator>
 #include <type_traits>
 
 namespace Interp {
@@ -24,37 +25,39 @@ concept ComplexFloatingPoint =
 
 template <typename T>
 concept RealOrComplexFloatingPoint =
-    std::floating_point<T> || ComplexFloatingPoint<T>;
+    RealFloatingPoint<T> or ComplexFloatingPoint<T>;
 
 // Concepts for iterators with real or complex floating point values.
 template <typename T>
 concept RealFloatingPointIterator = requires() {
-     requires std::random_access_iterator<T>;
-     requires RealFloatingPoint<std::iter_value_t<T>>;
+  requires std::random_access_iterator<T>;
+  requires RealFloatingPoint<std::iter_value_t<T>>;
 };
 
 template <typename T>
 concept ComplexFloatingPointIterator = requires() {
-     requires std::random_access_iterator<T>;
-     requires ComplexFloatingPoint<std::iter_value_t<T>>;
+  requires std::random_access_iterator<T>;
+  requires ComplexFloatingPoint<std::iter_value_t<T>>;
 };
 
 template <typename T>
 concept RealOrComplexFloatingPointIterator = requires() {
-     requires std::random_access_iterator<T>;
-     requires RealOrComplexFloatingPoint<std::iter_value_t<T>>;
+  requires std::random_access_iterator<T>;
+  requires RealOrComplexFloatingPoint<std::iter_value_t<T>>;
 };
 
 template <typename xIter, typename yIter>
 concept InterpolationIteratorPair = requires(xIter x, yIter y) {
-     requires RealFloatingPointIterator<xIter>;
-     requires RealOrComplexFloatingPointIterator<yIter>;
-     requires std::convertible_to<std::iter_value_t<xIter>,
-                                  std::iter_value_t<yIter>>;
-     { (*x) + (*y) } -> std::convertible_to<std::iter_value_t<yIter>>;
-     { (*x) * (*y) } -> std::convertible_to<std::iter_value_t<yIter>>;
+  requires RealFloatingPointIterator<xIter>;
+  requires RealOrComplexFloatingPointIterator<yIter>;
+  requires std::convertible_to<std::iter_value_t<xIter>,
+                               std::iter_value_t<yIter>>;
+  { (*x) + (*y) } -> std::convertible_to<std::iter_value_t<yIter>>;
+  { (*x) * (*y) } -> std::convertible_to<std::iter_value_t<yIter>>;
+  { (*y) / (*x) } -> std::convertible_to<std::iter_value_t<yIter>>;
 };
 
-}   // namespace Interp
+}  // namespace Interp
 
 #endif  //  INTERP_CONCEPTS_GUARD_H
+

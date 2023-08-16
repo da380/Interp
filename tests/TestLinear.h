@@ -16,9 +16,7 @@ template <std::floating_point Float>
 int LinearCheckNodalValues() {
   using namespace Interp;
 
-  auto func = [](Float x) {
-    return x * std::sin(2 * x);
-  };
+  auto func = [](Float x) { return x * std::sin(2 * x); };
 
   std::vector<Float> x, y;
   MakeData1D(x, y, func);

@@ -3,7 +3,6 @@
 
 #include <Eigen/IterativeLinearSolvers>
 #include <Eigen/SparseCore>
-#include <Eigen/SparseLU>
 #include <algorithm>
 #include <eigen3/Eigen/Core>
 #include <iostream>
@@ -74,12 +73,12 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
   if (left == CubicSplineBC::Clamped) {
     A.insert(0, 1) = oneSixth * (xS[1] - xS[0]);
   }
-  for (int i = 1; i < n - 1; i++) {
+  for (int i = 1; i < n - 1; ++i) {
     A.insert(i, i + 1) = oneSixth * (xS[i] - xS[i - 1]);
   }
 
   // Add in the lower diagonal.
-  for (int i = 0; i < n - 2; i++) {
+  for (int i = 0; i < n - 2; ++i) {
     A.insert(i + 1, i) = oneSixth * (xS[i + 1] - xS[i]);
   }
   if (right == CubicSplineBC::Clamped) {
@@ -92,7 +91,7 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
   } else {
     A.insert(0, 0) = oneThird * (xS[1] - xS[0]);
   }
-  for (int i = 1; i < n - 1; i++) {
+  for (int i = 1; i < n - 1; ++i) {
     A.insert(i, i) = oneThird * (xS[i + 1] - xS[i - 1]);
   }
   if (right == CubicSplineBC::Free) {
@@ -122,8 +121,7 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
   }
 
   // Solve the linear system.
-  Eigen::SparseLU<Matrix> solver;
-  //  Eigen::BiCGSTAB<Matrix> solver;
+  Eigen::BiCGSTAB<Matrix> solver;
   solver.compute(A);
   ypp = solver.solve(ypp);
   assert(solver.info() == Eigen::Success);

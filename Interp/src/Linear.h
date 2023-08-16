@@ -2,6 +2,7 @@
 #define INTERP_LINEAR_GUARD_H
 
 #include <algorithm>
+#include <cassert>
 #include <concepts>
 #include <iterator>
 #include <vector>
@@ -54,6 +55,6 @@ Linear<xIter, yIter>::y_value_t Linear<xIter, yIter>::operator()(
   return a * yS[i1] + b * yS[i2];
 }
 
-}   // namespace Interp
+}  // namespace Interp
 
 #endif  //  INTERP_LINEAR_GUARD_H

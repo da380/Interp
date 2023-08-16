@@ -1,6 +1,12 @@
 #ifndef INTERP_MAKE_DATA_1D_GUARD_H
 #define INTERP_MAKE_DATA_1D_GUARD_H
 
+#include <complex>
+#include <concepts>
+#include <numbers>
+#include <random>
+#include <vector>
+
 template <typename xVec, typename yVec, typename Function>
 void MakeData1D(xVec x, yVec y, Function func) {
   using x_value_t = xVec::value_type;
@@ -8,7 +14,7 @@ void MakeData1D(xVec x, yVec y, Function func) {
   // generate a random size for the data
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution<> d(10, 1000);
+  std::uniform_int_distribution<> d(10, 10000);
   int n = d(gen);
 
   // Set the x values

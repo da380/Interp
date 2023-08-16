@@ -3,7 +3,7 @@
 #include "TestLinear.h"
 
 // Tests for linear interpolation
-TEST(Linear, CheckNodelValues) {
+TEST(Linear, CheckNodalValues) {
   int i = LinearCheckNodalValues<double>();
   EXPECT_EQ(0, i);
 }
