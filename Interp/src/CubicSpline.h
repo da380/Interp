@@ -161,8 +161,8 @@ CubicSpline<xIter, yIter>::y_value_t CubicSpline<xIter, yIter>::operator()(
   auto a = (x2 - x) / h;
   auto b = (x - x1) / h;
   return a * yS[i1] + b * yS[i2] +
-         ((a * a * a - a) * ypp(i1) + (b * b * b - b) * ypp(i2)) *
-             (h * h * oneSixth);
+         ((a * a * a - a) * ypp(i1) + (b * b * b - b) * ypp(i2)) * h * h *
+             oneSixth;
 };
 
 }  // namespace Interp
