@@ -33,12 +33,13 @@ class Linear {
 };
 
 template <typename xIter, typename yIter>
-Linear<xIter, yIter>::Linear(xIter xS, xIter xF, yIter yS)
+requires InterpolationIteratorPair<xIter, yIter> Linear<xIter, yIter>::Linear(
+    xIter xS, xIter xF, yIter yS)
     : xS{xS}, xF{xF}, yS{yS} {}
 
 template <typename xIter, typename yIter>
-Linear<xIter, yIter>::y_value_t Linear<xIter, yIter>::operator()(
-    const x_value_t x) const {
+requires InterpolationIteratorPair<xIter, yIter> Linear<xIter, yIter>::y_value_t
+Linear<xIter, yIter>::operator()(const x_value_t x) const {
   // Find first element larger than x.
   auto iter = std::upper_bound(xS, xF, x);
   // Adjust the iterator if out of range.

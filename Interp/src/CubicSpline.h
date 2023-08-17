@@ -1,10 +1,10 @@
 #ifndef INTERP_CUBIC_SPLINE_GUARD_H
 #define INTERP_CUBIC_SPLINE_GUARD_H
 
+#include <Eigen/Core>
 #include <Eigen/IterativeLinearSolvers>
 #include <Eigen/SparseCore>
 #include <algorithm>
-#include <eigen3/Eigen/Core>
 #include <iostream>
 #include <iterator>
 #include <vector>
@@ -129,11 +129,13 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
 
 // Definition of the constructor for natural splines.
 template <typename xIter, typename yIter>
+requires InterpolationIteratorPair<xIter, yIter>
 CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS)
     : CubicSpline(xS, xF, yS, CubicSplineBC::Free, 0, CubicSplineBC::Free, 0) {}
 
 // Definition of the constructor when boundary conditions are the same.
 template <typename xIter, typename yIter>
+requires InterpolationIteratorPair<xIter, yIter>
 CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
                                        CubicSplineBC both, y_value_t ypl,
                                        y_value_t ypr)
@@ -141,8 +143,9 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
 
 // Evaluation of the interpolating function.
 template <typename xIter, typename yIter>
-CubicSpline<xIter, yIter>::y_value_t CubicSpline<xIter, yIter>::operator()(
-    x_value_t x) const {
+requires InterpolationIteratorPair<xIter, yIter>
+    CubicSpline<xIter, yIter>::y_value_t CubicSpline<xIter, yIter>::operator()(
+        x_value_t x) const {
   // Find the first element larger than x.
   auto iter = std::upper_bound(xS, xF, x);
   // Adjust the iterator if out of range.
