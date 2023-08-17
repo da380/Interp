@@ -1,7 +1,7 @@
 #ifndef INTERP_ALL_MODULE_H
 #define INTERP_ALL_MODULE_H
 
-// #include "src/AkimaSpline.h"
+#include "src/AkimaSpline.h"
 #include "src/Concepts.h"
 #include "src/CubicSpline.h"
 #include "src/Linear.h"
