@@ -50,6 +50,7 @@ class CubicSpline {
 
 // Definition of the main constructor.
 template <typename xIter, typename yIter>
+requires InterpolationIteratorPair<xIter, yIter>
 CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
                                        CubicSplineBC left, y_value_t ypl,
                                        CubicSplineBC right, y_value_t ypr)
