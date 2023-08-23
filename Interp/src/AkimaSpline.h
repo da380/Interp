@@ -25,6 +25,7 @@ class Akima {
 
      // Declare the application operator.
      y_value_t operator()(x_value_t) const;
+     y_value_t deriv(x_value_t) const;
 
     private:
      // Iterators to the function data.
@@ -104,6 +105,31 @@ Akima<xIter, yIter>::operator()(x_value_t x) const {
               ((iter[0] - iter[-1]) * (iter[0] - iter[-1]));
      return a +
             (x - iter[-1]) * (b + (x - iter[-1]) * (c + d * (x - iter[-1])));
+}
+
+template <typename xIter, typename yIter>
+     requires InterpolationIteratorPair<xIter, yIter>
+Akima<xIter, yIter>::y_value_t
+Akima<xIter, yIter>::deriv(x_value_t x) const {
+     // Find the first element larger than x.
+     auto iter = std::upper_bound(xS, xF, x);
+     const auto n = std::distance(xS, iter);
+     // std::cout << "n: " << n << std::endl;
+     // std::cout << "iter[-1]: " << iter[-1] << std::endl;
+     // Adjust the iterator if out of range.
+     if (iter == xS)
+          ++iter;
+     if (iter == xF)
+          --iter;
+     // Perform the interpolation.
+     // auto a = yS[n - 1];
+     auto b = s[n - 1];
+     auto c = (static_cast<y_value_t>(3.0) * m[n - 1] -
+               static_cast<y_value_t>(2.0) * s[n - 1] - s[n]) /
+              (iter[0] - iter[-1]);
+     auto d = (s[n - 1] + s[n] - static_cast<y_value_t>(2.0) * m[n - 1]) /
+              ((iter[0] - iter[-1]) * (iter[0] - iter[-1]));
+     return (b + (x - iter[-1]) * (2.0 * c + 3.0 * d * (x - iter[-1])));
 }
 
 }   // namespace Interp

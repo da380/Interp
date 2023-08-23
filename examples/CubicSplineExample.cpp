@@ -30,6 +30,14 @@ main() {
                return std::sin(x);
           }
      };
+     auto funcderiv = [](x_value_t x) {
+          if constexpr (ComplexFloatingPoint<y_value_t>) {
+               return std::complex<x_value_t>(std::cos(x), -std::sin(x));
+          }
+          if constexpr (RealFloatingPoint<y_value_t>) {
+               return std::cos(x);
+          }
+     };
 
      for (int i = 0; i < n; i++) {
           x[i] = pi * static_cast<double>(i) / static_cast<double>(n - 1);
@@ -66,6 +74,18 @@ main() {
           // std::cout << f(xx) << "     " << g(xx) << std::endl;
      }
      file2.close();
+
+     const char *path3 =
+         "/home/adcm2/raidam/Interp/output_files/Deriv_Test.out";
+     std::ofstream file3(path3);
+     // int m = 51;
+     for (int i = 0; i < m; i++) {
+          auto xx = pi * static_cast<double>(i) / static_cast<double>(m - 1);
+          file3 << xx << ";" << funcderiv(xx) << ";" << f.deriv(xx) << ";"
+                << g.deriv(xx) << std::endl;
+          // std::cout << f(xx) << "     " << g(xx) << std::endl;
+     }
+     file3.close();
 
      // g(0.09);
      // g(0.1);
