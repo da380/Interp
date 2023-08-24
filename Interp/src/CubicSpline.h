@@ -51,7 +51,7 @@ class CubicSpline {
 
 // Definition of the main constructor.
 template <typename xIter, typename yIter>
-     requires InterpolationIteratorPair<xIter, yIter>
+requires InterpolationIteratorPair<xIter, yIter>
 CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
                                        CubicSplineBC left, y_value_t ypl,
                                        CubicSplineBC right, y_value_t ypr)
@@ -134,13 +134,13 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
 
 // Definition of the constructor for natural splines.
 template <typename xIter, typename yIter>
-     requires InterpolationIteratorPair<xIter, yIter>
+requires InterpolationIteratorPair<xIter, yIter>
 CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS)
     : CubicSpline(xS, xF, yS, CubicSplineBC::Free, 0, CubicSplineBC::Free, 0) {}
 
 // Definition of the constructor when boundary conditions are the same.
 template <typename xIter, typename yIter>
-     requires InterpolationIteratorPair<xIter, yIter>
+requires InterpolationIteratorPair<xIter, yIter>
 CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
                                        CubicSplineBC both, y_value_t ypl,
                                        y_value_t ypr)
@@ -148,29 +148,27 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
 
 // Evaluation of the interpolating function.
 template <typename xIter, typename yIter>
-     requires InterpolationIteratorPair<xIter, yIter>
-CubicSpline<xIter, yIter>::y_value_t
-CubicSpline<xIter, yIter>::operator()(x_value_t x) const {
-     // Find the first element larger than x.
-     auto iter = std::upper_bound(xS, xF, x);
-     // Adjust the iterator if out of range.
-     if (iter == xS)
-          ++iter;
-     if (iter == xF)
-          --iter;
-     // Perform the interpolation.
-     constexpr auto oneSixth =
-         static_cast<x_value_t>(1) / static_cast<x_value_t>(6);
-     auto i2 = std::distance(xS, iter);
-     auto i1 = i2 - 1;
-     auto x1 = xS[i1];
-     auto x2 = xS[i2];
-     auto h = x2 - x1;
-     auto a = (x2 - x) / h;
-     auto b = (x - x1) / h;
-     return a * yS[i1] + b * yS[i2] +
-            ((a * a * a - a) * ypp(i1) + (b * b * b - b) * ypp(i2)) * h * h *
-                oneSixth;
+requires InterpolationIteratorPair<xIter, yIter>
+    CubicSpline<xIter, yIter>::y_value_t CubicSpline<xIter, yIter>::operator()(
+        x_value_t x) const {
+  // Find the first element larger than x.
+  auto iter = std::upper_bound(xS, xF, x);
+  // Adjust the iterator if out of range.
+  if (iter == xS) ++iter;
+  if (iter == xF) --iter;
+  // Perform the interpolation.
+  constexpr auto oneSixth =
+      static_cast<x_value_t>(1) / static_cast<x_value_t>(6);
+  auto i2 = std::distance(xS, iter);
+  auto i1 = i2 - 1;
+  auto x1 = xS[i1];
+  auto x2 = xS[i2];
+  auto h = x2 - x1;
+  auto a = (x2 - x) / h;
+  auto b = (x - x1) / h;
+  return a * yS[i1] + b * yS[i2] +
+         ((a * a * a - a) * ypp(i1) + (b * b * b - b) * ypp(i2)) * h * h *
+             oneSixth;
 };
 
 // Evaluation of the derivative.
