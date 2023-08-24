@@ -12,24 +12,24 @@
 namespace Interp {
 
 template <typename xIter, typename yIter>
-requires InterpolationIteratorPair<xIter, yIter>
+    requires InterpolationIteratorPair<xIter, yIter>
 class Linear {
- public:
-  // Define some class member types
-  using x_value_t = std::iter_value_t<xIter>;
-  using y_value_t = std::iter_value_t<yIter>;
+   public:
+    // Define some class member types
+    using x_value_t = std::iter_value_t<xIter>;
+    using y_value_t = std::iter_value_t<yIter>;
 
-  // Declare the constructor.
-  Linear(xIter, xIter, yIter);
+    // Declare the constructor.
+    Linear(xIter, xIter, yIter);
 
-  // Declare the application operator.
-  y_value_t operator()(x_value_t) const;
+    // Declare the application operator.
+    y_value_t operator()(x_value_t) const;
 
- private:
-  // Iterators to the function data.
-  xIter xS;
-  xIter xF;
-  yIter yS;
+   private:
+    // Iterators to the function data.
+    xIter xS;
+    xIter xF;
+    yIter yS;
 };
 
 template <typename xIter, typename yIter>
@@ -56,6 +56,6 @@ Linear<xIter, yIter>::operator()(const x_value_t x) const {
   return a * yS[i1] + b * yS[i2];
 }
 
-}  // namespace Interp
+}   // namespace Interp
 
-#endif  //  INTERP_LINEAR_GUARD_H
+#endif   //  INTERP_LINEAR_GUARD_H
