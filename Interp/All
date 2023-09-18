@@ -5,5 +5,6 @@
 #include "src/Concepts.h"
 #include "src/CubicSpline.h"
 #include "src/Linear.h"
+#include "src/Polynomial.h"
 
 #endif

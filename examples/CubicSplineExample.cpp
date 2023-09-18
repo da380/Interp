@@ -13,32 +13,6 @@
 #include <random>
 #include <vector>
 
-template <typename T>
-class RandomPolynomial {
- public:
-  RandomPolynomial(int n) : n{n} {
-    std::random_device rd{};
-    std::mt19937_64 gen{rd()};
-    std::uniform_real_distribution<T> d{-1, 1};
-    std::generate_n(std::back_inserter(a), n + 1, [&]() { return d(gen); });
-  }
-
-  T operator()(T x) {
-    return std::accumulate(a.rbegin(), a.rend(), static_cast<T>(0),
-                           [x](auto p, auto a) { return p * x + a; });
-  }
-
-  T Derivative(T x) {
-    return std::accumulate(
-        a.rbegin(), std::prev(a.rend()), static_cast<T>(0),
-        [x, m = n](auto p, auto a) mutable { return p * x + (m--) * a; });
-  }
-
- private:
-  int n;
-  std::vector<T> a;
-};
-
 int main() {
   using namespace Interp;
 
@@ -46,11 +20,11 @@ int main() {
   using x_value_t = double;
 
   // Set the type for y (uncomment the desired option).
-  using y_value_t = x_value_t;
-  //  using y_value_t = std::complex<x_value_t>;
+  //  using y_value_t = x_value_t;
+  using y_value_t = std::complex<x_value_t>;
 
   // Make a random  polynomial
-  auto p = RandomPolynomial<y_value_t>(1);
+  auto p = Polynomial1D<y_value_t>::Random(1);
 
   // Set the function arrays.
   std::vector<x_value_t> x;
