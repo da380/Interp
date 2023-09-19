@@ -57,7 +57,7 @@ class Polynomial1D {
                            [x](auto p, auto a) { return p * x + a; });
   }
 
-    // Evaluates the derivative.
+  // Evaluates the derivative.
   T Derivative(T x) const {
     return std::accumulate(coef.rbegin(), std::prev(coef.rend()),
                            static_cast<T>(0),
@@ -66,7 +66,7 @@ class Polynomial1D {
                            });
   }
 
-    // Evaluates the primative.
+  // Evaluates the primative.
   T Primative(T x) const {
     return std::accumulate(coef.rbegin(), coef.rend(), static_cast<T>(0),
                            [x, m = Degree() + 1](auto p, auto a) mutable {
@@ -75,11 +75,11 @@ class Polynomial1D {
   }
 
   // Returns integral over [a,b].
-  T Integral(T a, T b) const { return Primative(b) - Primative(a); }
+  T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
  private:
   std::vector<T> coef;
-  };
+};
 
 }  // namespace Interp
 
