@@ -49,33 +49,36 @@ class Polynomial1D {
   }
 
   // Returns the degree.
-  auto Degree() { return coef.size() - 1; }
+  auto Degree() const { return coef.size() - 1; }
 
   // Evaluates the function.
-  T operator()(T x) {
+  T operator()(T x) const {
     return std::accumulate(coef.rbegin(), coef.rend(), static_cast<T>(0),
                            [x](auto p, auto a) { return p * x + a; });
-    }
+  }
 
     // Evaluates the derivative.
-    T Derivative(T x) {
-      return std::accumulate(coef.rbegin(), std::prev(coef.rend()),
-                             static_cast<T>(0),
-                             [x, m = Degree()](auto p, auto a) mutable {
-                               return p * x + static_cast<T>(m--) * a;
-                             });
-    }
+  T Derivative(T x) const {
+    return std::accumulate(coef.rbegin(), std::prev(coef.rend()),
+                           static_cast<T>(0),
+                           [x, m = Degree()](auto p, auto a) mutable {
+                             return p * x + static_cast<T>(m--) * a;
+                           });
+  }
 
     // Evaluates the primative.
-    T Primative(T x) {
-      return std::accumulate(coef.rbegin(), coef.rend(), static_cast<T>(0),
-                             [x, m = Degree() + 1](auto p, auto a) mutable {
-                               return p * x + a * x / static_cast<T>(m--);
-                             });
-    }
+  T Primative(T x) const {
+    return std::accumulate(coef.rbegin(), coef.rend(), static_cast<T>(0),
+                           [x, m = Degree() + 1](auto p, auto a) mutable {
+                             return p * x + a * x / static_cast<T>(m--);
+                           });
+  }
 
-   private:
-    std::vector<T> coef;
+  // Returns integral over [a,b].
+  T Integral(T a, T b) const { return Primative(b) - Primative(a); }
+
+ private:
+  std::vector<T> coef;
   };
 
 }  // namespace Interp

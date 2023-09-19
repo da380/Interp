@@ -3,6 +3,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/IterativeLinearSolvers>
+#include <Eigen/SparseCholesky>
 #include <Eigen/SparseCore>
 #include <algorithm>
 #include <iostream>
@@ -99,7 +100,7 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
   if (right == CubicSplineBC::Free) {
     A.insert(n - 1, n - 1) = 1;
   } else {
-    A.insert(n - 1, n - 1) = oneThird * (xS[n - 2] - xS[n - 1]);
+    A.insert(n - 1, n - 1) = oneThird * (xS[n - 1] - xS[n - 2]);
   }
 
   // Finalise the matrix construction.
@@ -118,13 +119,14 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
              (yS[i] - yS[i - 1]) / (xS[i] - xS[i - 1]);
   }
   if (right == CubicSplineBC::Free) {
-    rhs(n - 1) = static_cast<y_value_t>(0);
+    rhs(n - 1) = 0;
   } else {
-    rhs(n - 1) = (yS[n - 1] - yS[n - 2]) / (xS[n - 1] - xS[n - 2]) - ypr;
+    rhs(n - 1) = ypr - (yS[n - 1] - yS[n - 2]) / (xS[n - 1] - xS[n - 2]);
   }
 
   // Solve the linear system.
-  Eigen::BiCGSTAB<Matrix> solver;
+  //  Eigen::BiCGSTAB<Matrix> solver;
+  Eigen::SimplicialLDLT<Matrix> solver;
   solver.compute(A);
   ypp = solver.solve(rhs);
   assert(solver.info() == Eigen::Success);
@@ -192,7 +194,7 @@ const {
   auto b = (x - x1) / h;
   return (yS[i2] - yS[i1]) / h +
          oneSixth * h *
-             ((-3.0 * a * a + 1) * ypp(i1) + (3.0 * b * b - 1) * ypp(i2));
+             ((-3 * a * a + 1) * ypp(i1) + (3 * b * b - 1) * ypp(i2));
 };
 
 }  // namespace Interp

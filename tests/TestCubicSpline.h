@@ -1,8 +1,9 @@
-#ifndef INTERP_TEST_LINEAR_GUARD_H
-#define INTERP_TEST_LINEAR_GUARD_H
+#ifndef INTERP_TEST_CUBIC_SPLINE_GUARD_H
+#define INTERP_TEST_CUBIC_SPLINE_GUARD_H
 
 #include <Interp/All>
 #include <complex>
+#include <iostream>
 #include <limits>
 #include <numbers>
 #include <random>
@@ -10,11 +11,11 @@
 
 template <Interp::RealFloatingPoint x_value_t,
           Interp::RealOrComplexFloatingPoint y_value_t>
-int LinearCheck() {
+int CubicSplineCheck() {
   using namespace Interp;
 
-  // Make a random linear polynomial.
-  auto p = Polynomial1D<y_value_t>::Random(1);
+  // Make a random cubic polynomial.
+  auto p = Polynomial1D<y_value_t>::Random(3);
 
   // set the number of sampling points randomly
   std::random_device rd{};
@@ -36,7 +37,8 @@ int LinearCheck() {
                  [&](auto x) { return p(x); });
 
   // Form the interpolating function.
-  auto f = Linear(x.begin(), x.end(), y.begin());
+  auto f = CubicSpline(x.begin(), x.end(), y.begin(), CubicSplineBC::Clamped,
+                       p.Derivative(x1), p.Derivative(x2));
 
   // Compare exact and interpolated values at randomly sampled points
   std::uniform_real_distribution<x_value_t> xDist{x1, x2};
@@ -54,4 +56,4 @@ int LinearCheck() {
   return 0;
 }
 
-#endif  // INTERP_TEST_LINEAR_GUARD_H
+#endif  // INTERP_TEST_CUBIC_SPLINE_GUARD_H

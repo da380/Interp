@@ -20,33 +20,36 @@ int main() {
   using x_value_t = double;
 
   // Set the type for y (uncomment the desired option).
-  //  using y_value_t = x_value_t;
-  using y_value_t = std::complex<x_value_t>;
+  using y_value_t = x_value_t;
+  //  using y_value_t = std::complex<x_value_t>;
 
-  // Make a random  polynomial
-  auto p = Polynomial1D<y_value_t>::Random(1);
+  // Make a cubic polynomial.
+  auto p = Polynomial1D<y_value_t>::Random(3);
 
   // Set the function arrays.
   std::vector<x_value_t> x;
   std::vector<y_value_t> y;
   std::vector<y_value_t> yp;
   const int n = 14;
-  const auto dth =
-      std::numbers::pi_v<x_value_t> / static_cast<x_value_t>(n - 1);
+  const x_value_t x1 = 0;
+  const x_value_t x2 = std::numbers::pi_v<x_value_t>;
+  auto dx = (x2 - x1) / static_cast<x_value_t>(n - 1);
   std::generate_n(std::back_inserter(x), n,
-                  [dth, m = 0]() mutable { return dth * m++; });
+                  [x1, dx, m = 0]() mutable { return x1 + dx * m++; });
   std::transform(x.begin(), x.end(), std::back_inserter(y),
                  [&](auto x) { return p(x); });
   std::transform(x.begin(), x.end(), std::back_inserter(yp),
                  [&](auto x) { return p.Derivative(x); });
 
   // Form the cubic spline.
-  auto f = CubicSpline(x.begin(), x.end(), y.begin());
+  auto f =
+      CubicSpline(x.begin(), x.end(), y.begin(), CubicSplineBC::Clamped,
+                  p.Derivative(x1), CubicSplineBC::Clamped, p.Derivative(x2));
 
   // Compare exact and interpolated values at randomly sampled points
   std::random_device rd{};
   std::mt19937_64 gen{rd()};
-  std::uniform_real_distribution<x_value_t> d{0, std::numbers::pi_v<x_value_t>};
+  std::uniform_real_distribution<x_value_t> d{x1, x2};
   int count = 0;
   auto maxErr = static_cast<x_value_t>(0);
   auto maxDerivErr = static_cast<x_value_t>(0);

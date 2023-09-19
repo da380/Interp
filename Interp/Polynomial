@@ -1,0 +1,7 @@
+#ifndef INTERP_POLYNOMIAL_MODULE_H
+#define INTERP_POLYNOMIAL_MODULE_H
+
+#include "src/Concepts.h"
+#include "src/Polynomial.h"
+
+#endif

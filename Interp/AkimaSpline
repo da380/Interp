@@ -1,0 +1,7 @@
+#ifndef INTERP_AKIMA_SPLINE_MODULE_H
+#define INTERP_AKIMA_SPLINE_MODULE_H
+
+#include "src/AkimaSpline.h"
+#include "src/Concepts.h"
+
+#endif
