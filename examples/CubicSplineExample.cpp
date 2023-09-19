@@ -23,14 +23,14 @@ int main() {
   using y_value_t = x_value_t;
   //  using y_value_t = std::complex<x_value_t>;
 
-  // Make a cubic polynomial.
+  // Make a random polynomial.
   auto p = Polynomial1D<y_value_t>::Random(3);
 
   // Set the function arrays.
   std::vector<x_value_t> x;
   std::vector<y_value_t> y;
   std::vector<y_value_t> yp;
-  const int n = 14;
+  const int n = 100;
   const x_value_t x1 = 0;
   const x_value_t x2 = std::numbers::pi_v<x_value_t>;
   auto dx = (x2 - x1) / static_cast<x_value_t>(n - 1);
@@ -55,7 +55,6 @@ int main() {
   auto maxDerivErr = static_cast<x_value_t>(0);
   while (count++ < 100) {
     auto xx = d(gen);
-    std::cout << xx << "   " << std::abs(f(xx) - p(xx)) << std::endl;
     auto err = std::abs(f(xx) - p(xx));
     if (err > maxErr) maxErr = err;
     auto derivErr = std::abs(f.Derivative(xx) - p.Derivative(xx));
@@ -66,57 +65,4 @@ int main() {
 
   std::cout << "Maximum interpolation error for derivative values = "
             << maxDerivErr << std::endl;
-
-  /*
-
-for (int i = 0; i < n; i++) {
-x[i] = pi * static_cast<double>(i) / static_cast<double>(n - 1);
-y[i] = func(x[i]);
-}
-
-using namespace std::chrono;
-auto start = high_resolution_clock::now();
-auto f = CubicSpline(x.begin(), x.end(), y.begin());
-auto stop = high_resolution_clock::now();
-auto duration = duration_cast<microseconds>(stop - start);
-std::cout << duration.count() / static_cast<double>(1000000) << std::endl;
-start = high_resolution_clock::now();
-auto g = Akima(x.begin(), x.end(), y.begin());
-stop = high_resolution_clock::now();
-duration = duration_cast<microseconds>(stop - start);
-std::cout << duration.count() / static_cast<double>(1000000) << std::endl;
-//     const char *path =
-//     "/home/adcm2/raidam/Interp/output_files/cubic_spline.in";
-// std::ofstream file(path);
-// for (int i = 0; i < n; i++) {
-//      // auto x = static_cast<double>(i) / static_cast<double>(m -
-//      1); file << x[i] << ";" << y[i] << std::endl;
-// }
-// file.close();
-
-const char *path2 = "/home/adcm2/raidam/Interp/output_files/C+Akima.out";
-std::ofstream file2(path2);
-int m = 51;
-for (int i = 0; i < m; i++) {
-auto xx = pi * static_cast<double>(i) / static_cast<double>(m - 1);
-file2 << xx << ";" << func(xx) << ";" << f(xx) << ";" << g(xx) << std::endl;
-// std::cout << f(xx) << "     " << g(xx) << std::endl;
-}
-file2.close();
-
-const char *path3 = "/home/adcm2/raidam/Interp/output_files/Deriv_Test.out";
-std::ofstream file3(path3);
-// int m = 51;
-for (int i = 0; i < m; i++) {
-auto xx = pi * static_cast<double>(i) / static_cast<double>(m - 1);
-file3 << xx << ";" << funcderiv(xx) << ";" << f.deriv(xx) << ";"
-<< g.deriv(xx) << std::endl;
-// std::cout << f(xx) << "     " << g(xx) << std::endl;
-}
-file3.close();
-
-// g(0.09);
-// g(0.1);
-
-*/
 }

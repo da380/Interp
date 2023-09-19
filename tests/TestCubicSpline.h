@@ -26,10 +26,15 @@ int CubicSplineCheck() {
   // Set the x values
   const x_value_t x1 = 0;
   const x_value_t x2 = 1;
-  auto dx = (x2 - x1) / static_cast<x_value_t>(nSample - 1);
+  auto h = (x2 - x1) / static_cast<x_value_t>(nSample - 1);
   std::vector<x_value_t> x;
   std::generate_n(std::back_inserter(x), nSample,
-                  [x1, dx, m = 0]() mutable { return x1 + dx * m++; });
+                  [x1, h, m = 0]() mutable { return x1 + h * m++; });
+
+  // add random shifts so that points are not equally spaced
+  std::uniform_real_distribution<x_value_t> hDist(-0.1 * h, 0.1 * h);
+  std::transform(std::next(x.begin()), std::prev(x.end()), std::next(x.begin()),
+                 [&](auto x) { return x + hDist(gen); });
 
   // Set the y-values
   std::vector<y_value_t> y;
