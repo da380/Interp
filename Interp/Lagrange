@@ -1,0 +1,7 @@
+#ifndef INTERP_LAGRNAGE_MODULE_H
+#define INTERP_LAGRNAGE_MODULE_H
+
+#include "src/Concepts.h"
+#include "src/Lagrange.h"
+
+#endif
