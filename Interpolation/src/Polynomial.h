@@ -15,11 +15,14 @@ template <typename T>
 requires RealOrComplexFloatingPoint<T>
 class Polynomial1D {
  public:
+  // Type alias for the scalar.
+  using value_type = T;
+
   // Construct from std::vector.
-  Polynomial1D(std::vector<T> coef) : coef{coef} {}
+  Polynomial1D(std::vector<T> a) : _a{a} {}
 
   // Construct from std::initializer list.
-  Polynomial1D(std::initializer_list<T> list) : coef{std::vector<T>{list}} {}
+  Polynomial1D(std::initializer_list<T> list) : _a{std::vector<T>{list}} {}
 
   // Return a real random polynomial of given degree.
   static Polynomial1D Random(int n) requires RealFloatingPoint<T> {
@@ -49,18 +52,17 @@ class Polynomial1D {
   }
 
   // Returns the degree.
-  auto Degree() const { return coef.size() - 1; }
+  auto Degree() const { return _a.size() - 1; }
 
   // Evaluates the function.
   T operator()(T x) const {
-    return std::accumulate(coef.rbegin(), coef.rend(), static_cast<T>(0),
+    return std::accumulate(_a.rbegin(), _a.rend(), static_cast<T>(0),
                            [x](auto p, auto a) { return p * x + a; });
   }
 
   // Evaluates the derivative.
   T Derivative(T x) const {
-    return std::accumulate(coef.rbegin(), std::prev(coef.rend()),
-                           static_cast<T>(0),
+    return std::accumulate(_a.rbegin(), std::prev(_a.rend()), static_cast<T>(0),
                            [x, m = Degree()](auto p, auto a) mutable {
                              return p * x + static_cast<T>(m--) * a;
                            });
@@ -68,7 +70,7 @@ class Polynomial1D {
 
   // Evaluates the primative.
   T Primative(T x) const {
-    return std::accumulate(coef.rbegin(), coef.rend(), static_cast<T>(0),
+    return std::accumulate(_a.rbegin(), _a.rend(), static_cast<T>(0),
                            [x, m = Degree() + 1](auto p, auto a) mutable {
                              return p * x + a * x / static_cast<T>(m--);
                            });
@@ -78,7 +80,7 @@ class Polynomial1D {
   T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
  private:
-  std::vector<T> coef;
+  std::vector<T> _a;  // Vector of polynomial coefficients.
 };
 
 }  // namespace Interpolation
