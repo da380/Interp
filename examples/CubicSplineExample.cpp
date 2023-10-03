@@ -1,5 +1,5 @@
 
-#include <Interp/All>
+#include <Interpolation/All>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -14,7 +14,7 @@
 #include <vector>
 
 int main() {
-  using namespace Interp;
+  using namespace Interpolation;
 
   // Set the type for x.
   using x_value_t = double;

@@ -9,6 +9,6 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(Tests
                Tests.cpp)
-target_link_libraries(Tests PRIVATE Interp gtest_main)
+target_link_libraries(Tests PRIVATE Interpolation gtest_main)
 include(GoogleTest)
 gtest_discover_tests(Tests)

@@ -1,5 +1,5 @@
-#ifndef INTERP_CUBIC_SPLINE_GUARD_H
-#define INTERP_CUBIC_SPLINE_GUARD_H
+#ifndef INTERPOLATION_CUBIC_SPLINE_GUARD_H
+#define INTERPOLATION_CUBIC_SPLINE_GUARD_H
 
 #include <Eigen/Core>
 #include <Eigen/IterativeLinearSolvers>
@@ -12,7 +12,7 @@
 
 #include "Concepts.h"
 
-namespace Interp {
+namespace Interpolation {
 
 // Enum class for boundary condition types.
 enum class CubicSplineBC { Free, Clamped };
@@ -197,6 +197,6 @@ const {
              ((-3 * a * a + 1) * ypp(i1) + (3 * b * b - 1) * ypp(i2));
 };
 
-}  // namespace Interp
+}  // namespace Interpolation
 
-#endif  //  INTERP_CUBIC_SPLINE_GUARD_H
+#endif  //  INTERPOLATION_CUBIC_SPLINE_GUARD_H

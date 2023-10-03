@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.5)
 
 
 
-project(Interp)
+project(Interpolation)
 
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
@@ -26,9 +26,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Eigen3)
 
 # Set up the library
-add_library (Interp INTERFACE)
-target_link_libraries(Interp INTERFACE Eigen3::Eigen)
-target_include_directories (Interp INTERFACE
+add_library (Interpolation INTERFACE)
+target_link_libraries(Interpolation INTERFACE Eigen3::Eigen)
+target_include_directories (Interpolation INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
 )

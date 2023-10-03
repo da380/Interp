@@ -1,5 +1,5 @@
-#ifndef INTERP_POLYNOMIAL_GUARD_H
-#define INTERP_POLYNOMIAL_GUARD_H
+#ifndef INTERPOLATION_POLYNOMIAL_GUARD_H
+#define INTERPOLATION_POLYNOMIAL_GUARD_H
 
 #include <algorithm>
 #include <initializer_list>
@@ -9,7 +9,7 @@
 
 #include "Concepts.h"
 
-namespace Interp {
+namespace Interpolation {
 
 template <typename T>
 requires RealOrComplexFloatingPoint<T>
@@ -81,6 +81,6 @@ class Polynomial1D {
   std::vector<T> coef;
 };
 
-}  // namespace Interp
+}  // namespace Interpolation
 
-#endif  // INTERP_POLYNOMIAL_GUARD_H
+#endif  // INTERPOLATION_POLYNOMIAL_GUARD_H

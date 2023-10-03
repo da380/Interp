@@ -1,7 +1,7 @@
-#ifndef INTERP_TEST_CUBIC_SPLINE_GUARD_H
-#define INTERP_TEST_CUBIC_SPLINE_GUARD_H
+#ifndef INTERPOLATION_TEST_CUBIC_SPLINE_GUARD_H
+#define INTERPOLATION_TEST_CUBIC_SPLINE_GUARD_H
 
-#include <Interp/All>
+#include <Interpolation/All>
 #include <complex>
 #include <iostream>
 #include <limits>
@@ -9,10 +9,10 @@
 #include <random>
 #include <vector>
 
-template <Interp::RealFloatingPoint x_value_t,
-          Interp::RealOrComplexFloatingPoint y_value_t>
+template <Interpolation::RealFloatingPoint x_value_t,
+          Interpolation::RealOrComplexFloatingPoint y_value_t>
 int CubicSplineCheck() {
-  using namespace Interp;
+  using namespace Interpolation;
 
   // Make a random cubic polynomial.
   auto p = Polynomial1D<y_value_t>::Random(3);
@@ -61,4 +61,4 @@ int CubicSplineCheck() {
   return 0;
 }
 
-#endif  // INTERP_TEST_CUBIC_SPLINE_GUARD_H
+#endif  // INTERPOLATION_TEST_CUBIC_SPLINE_GUARD_H

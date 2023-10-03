@@ -1,17 +1,17 @@
-#ifndef INTERP_TEST_LINEAR_GUARD_H
-#define INTERP_TEST_LINEAR_GUARD_H
+#ifndef INTERPOLATION_TEST_LINEAR_GUARD_H
+#define INTERPOLATION_TEST_LINEAR_GUARD_H
 
-#include <Interp/All>
+#include <Interpolation/All>
 #include <complex>
 #include <limits>
 #include <numbers>
 #include <random>
 #include <vector>
 
-template <Interp::RealFloatingPoint x_value_t,
-          Interp::RealOrComplexFloatingPoint y_value_t>
+template <Interpolation::RealFloatingPoint x_value_t,
+          Interpolation::RealOrComplexFloatingPoint y_value_t>
 int LinearCheck() {
-  using namespace Interp;
+  using namespace Interpolation;
 
   // Make a random linear polynomial.
   auto p = Polynomial1D<y_value_t>::Random(1);
@@ -59,4 +59,4 @@ int LinearCheck() {
   return 0;
 }
 
-#endif  // INTERP_TEST_LINEAR_GUARD_H
+#endif  // INTERPOLATION_TEST_LINEAR_GUARD_H

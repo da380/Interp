@@ -1,5 +1,5 @@
 
-#include <Interp/All>
+#include <Interpolation/All>
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -8,7 +8,7 @@
 #include <vector>
 
 int main() {
-  using namespace Interp;
+  using namespace Interpolation;
 
   // Set the nodes
   int N = 3;

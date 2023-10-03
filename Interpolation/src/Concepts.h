@@ -1,12 +1,12 @@
-#ifndef INTERP_CONCEPTS_GUARD_H
-#define INTERP_CONCEPTS_GUARD_H
+#ifndef INTERPOLATION_CONCEPTS_GUARD_H
+#define INTERPOLATION_CONCEPTS_GUARD_H
 
 #include <complex>
 #include <concepts>
 #include <iterator>
 #include <type_traits>
 
-namespace Interp {
+namespace Interpolation {
 
 // Concepts for real or complex floating point types.
 template <typename T>
@@ -57,7 +57,6 @@ concept InterpolationIteratorPair = requires(xIter x, yIter y) {
   { (*y) / (*x) } -> std::convertible_to<std::iter_value_t<yIter>>;
 };
 
-}  // namespace Interp
+}  // namespace Interpolation
 
-#endif  //  INTERP_CONCEPTS_GUARD_H
-
+#endif  //  INTERPOLATION_CONCEPTS_GUARD_H

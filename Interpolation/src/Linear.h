@@ -1,5 +1,5 @@
-#ifndef INTERP_LINEAR_GUARD_H
-#define INTERP_LINEAR_GUARD_H
+#ifndef INTERPOLATION_LINEAR_GUARD_H
+#define INTERPOLATION_LINEAR_GUARD_H
 
 #include <algorithm>
 #include <cassert>
@@ -9,7 +9,7 @@
 
 #include "Concepts.h"
 
-namespace Interp {
+namespace Interpolation {
 
 template <typename xIter, typename yIter>
 requires InterpolationIteratorPair<xIter, yIter>
@@ -79,6 +79,6 @@ const {
   return (yS[i2] - yS[i1]) / h;
 }
 
-}   // namespace Interp
+}  // namespace Interpolation
 
-#endif   //  INTERP_LINEAR_GUARD_H
+#endif  //  INTERPOLATION_LINEAR_GUARD_H

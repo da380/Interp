@@ -1,5 +1,5 @@
-#ifndef INTERP_LAGRANGE_GUARD_H
-#define INTERP_LAGRANGE_GUARD_H
+#ifndef INTERPOLATION_LAGRANGE_GUARD_H
+#define INTERPOLATION_LAGRANGE_GUARD_H
 
 #include <Eigen/Core>
 #include <algorithm>
@@ -12,7 +12,7 @@
 
 #include "Concepts.h"
 
-namespace Interp {
+namespace Interpolation {
 
 template <RealFloatingPointIterator I>
 class LagrangePolynomial {
@@ -101,6 +101,6 @@ class Lagrange {
   LagrangePolynomial<xIter> h;  // Lagrange Polynomial for interpolation.
 };
 
-}  // namespace Interp
+}  // namespace Interpolation
 
 #endif
