@@ -94,6 +94,14 @@ class Polynomial1D {
     return res;
   };
 
+  //addition operator
+  Polynomial1D<T> operator+(T b) {
+    std::vector<T> myval = _a;
+    myval[0] += b;
+    Polynomial1D<T> res{myval};
+    return res;
+  };
+
  private:
   std::vector<T> _a;  // Vector of polynomial coefficients.
 };
