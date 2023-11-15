@@ -83,6 +83,10 @@ class Polynomial1D {
   // Returns integral over [a,b].
   T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
+//output 
+std::vector<T> polycoeff() {
+  return this->_a;
+};
 //overloaded addition operator
 //addition operator
   Polynomial1D<T> operator+(T b) {
@@ -98,9 +102,9 @@ class Polynomial1D {
     std::vector<T> myval;
     for (int idx = 0; idx < maxnum+1; ++idx){
       if (idx < this->Degree() && idx < b.Degree()){
-        myval.push_back(_a[idx]+b[idx]);
+        myval.push_back(_a[idx]+b.polycoeff()[idx]);
       } else if (idx > this->Degree() && idx < b.Degree()){
-        myval.push_back(b[idx]);
+        myval.push_back(b.polycoeff()[idx]);
       } else if (idx < this->Degree() && idx > b.Degree()){
         myval.push_back(_a[idx]);
     }}
