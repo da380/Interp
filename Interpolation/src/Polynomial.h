@@ -25,7 +25,9 @@ class Polynomial1D {
   Polynomial1D(std::initializer_list<T> list) : _a{std::vector<T>{list}} {}
 
   // Return a real random polynomial of given degree.
-  static Polynomial1D Random(int n) requires RealFloatingPoint<T> {
+  static Polynomial1D Random(int n)
+  requires RealFloatingPoint<T>
+  {
     std::random_device rd{};
     std::mt19937_64 gen{rd()};
     std::normal_distribution<T> d{};
@@ -39,7 +41,9 @@ class Polynomial1D {
   }
 
   // Return a complex random polynomial of given degree.
-  static Polynomial1D Random(int n) requires ComplexFloatingPoint<T> {
+  static Polynomial1D Random(int n)
+  requires ComplexFloatingPoint<T>
+  {
     using S = typename T::value_type;
     std::random_device rd{};
     std::mt19937_64 gen{rd()};
@@ -79,11 +83,13 @@ class Polynomial1D {
   // Returns integral over [a,b].
   T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
-
-//multiplication operator
-  void operator*(T b) { 
-    _a = b * _a;
+  // multiplication operator
+  Polynomial1D<T> operator*(T b) {
+    std::vector<T> myval = b * _a;
+    Polynomial1D<T> res{myval};
+    return res;
   };
+
  private:
   std::vector<T> _a;  // Vector of polynomial coefficients.
 };
