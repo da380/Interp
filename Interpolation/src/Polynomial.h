@@ -83,6 +83,39 @@ class Polynomial1D {
   // Returns integral over [a,b].
   T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
+//overloaded addition operator
+//addition operator
+  Polynomial1D<T> operator+(T b) {
+    std::vector<T> myval = _a;
+    myval[0] += b;
+    Polynomial1D<T> res{myval};
+    return res;
+  };
+
+  Polynomial1D<T> operator+(Polynomial1D<T>  b) {
+    auto maxnum = std::max(this->Degree(), b.Degree());
+    auto minnum = std::min(this->Degree(), b.Degree());
+    std::vector<T> myval;
+    for (int idx = 0; idx < maxnum+1; ++idx){
+      if (idx < this->Degree() && idx < b.Degree()){
+        myval.push_back(_a[idx]+b[idx]);
+      } else if (idx > this->Degree() && idx < b.Degree()){
+        myval.push_back(b[idx]);
+      } else if (idx < this->Degree() && idx > b.Degree()){
+        myval.push_back(_a[idx]);
+    }}
+    // myval[0] += b;
+    Polynomial1D<T> res{myval};
+    return res;
+  };
+
+  Polynomial1D<T> operator-(T b) {
+    std::vector<T> myval = _a;
+    myval[0] -= b;
+    Polynomial1D<T> res{myval};
+    return res;
+  };
+
   // multiplication operator
   Polynomial1D<T> operator*(T b) {
     std::vector<T> myval;
@@ -94,13 +127,7 @@ class Polynomial1D {
     return res;
   };
 
-  //addition operator
-  Polynomial1D<T> operator+(T b) {
-    std::vector<T> myval = _a;
-    myval[0] += b;
-    Polynomial1D<T> res{myval};
-    return res;
-  };
+  
 
  private:
   std::vector<T> _a;  // Vector of polynomial coefficients.
