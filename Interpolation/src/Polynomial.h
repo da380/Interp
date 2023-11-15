@@ -86,7 +86,8 @@ class Polynomial1D {
   // multiplication operator
   Polynomial1D<T> operator*(T b) {
     std::vector<T> myval;
-    for (std::vector<T>::iterator iter = _a.begin(); iter < _a.end(); ++iter){
+    typename std::vector<T>::iterator iter = _a.begin();
+    for (iter; iter < _a.end(); ++iter){
       myval.push_back(b * iter[0]);
     }
     Polynomial1D<T> res{myval};
