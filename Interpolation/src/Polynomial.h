@@ -79,6 +79,11 @@ class Polynomial1D {
   // Returns integral over [a,b].
   T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
+
+//multiplication operator
+  void operator*(T b) { 
+    _a = b * _a;
+  };
  private:
   std::vector<T> _a;  // Vector of polynomial coefficients.
 };
