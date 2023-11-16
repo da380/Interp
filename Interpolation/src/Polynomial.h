@@ -87,33 +87,22 @@ class Polynomial1D {
 std::vector<T> polycoeff() {
   return this->_a;
 };
-//overloaded addition operator
+
+
 //addition operator
-  Polynomial1D<T> operator+(T b) {
+  template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> operator+(FLOAT b) {
     std::vector<T> myval = _a;
     myval[0] += b;
     Polynomial1D<T> res{myval};
     return res;
   };
 
-  Polynomial1D<T> operator+(Polynomial1D<T>  b) {
-    auto maxnum = std::max(this->Degree(), b.Degree());
-    auto minnum = std::min(this->Degree(), b.Degree());
-    std::vector<T> myval;
-    for (int idx = 0; idx < maxnum+1; ++idx){
-      if (idx < this->Degree() && idx < b.Degree()){
-        myval.push_back(_a[idx]+b.polycoeff()[idx]);
-      } else if (idx > this->Degree() && idx < b.Degree()){
-        myval.push_back(b.polycoeff()[idx]);
-      } else if (idx < this->Degree() && idx > b.Degree()){
-        myval.push_back(_a[idx]);
-    }}
-    // myval[0] += b;
-    Polynomial1D<T> res{myval};
-    return res;
-  };
-
-  Polynomial1D<T> operator-(T b) {
+//subtraction operator
+  template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> operator-(FLOAT b) {
     std::vector<T> myval = _a;
     myval[0] -= b;
     Polynomial1D<T> res{myval};
@@ -121,7 +110,9 @@ std::vector<T> polycoeff() {
   };
 
   // multiplication operator
-  Polynomial1D<T> operator*(T b) {
+  template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> operator*(FLOAT b) {
     std::vector<T> myval;
     typename std::vector<T>::iterator iter = _a.begin();
     for (iter; iter < _a.end(); ++iter){
@@ -130,6 +121,39 @@ std::vector<T> polycoeff() {
     Polynomial1D<T> res{myval};
     return res;
   };
+
+// division operator
+template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> operator/(FLOAT b) {
+    std::vector<T> myval;
+    typename std::vector<T>::iterator iter = _a.begin();
+    for (iter; iter < _a.end(); ++iter){
+      myval.push_back(iter[0]/b);
+    }
+    Polynomial1D<T> res{myval};
+    return res;
+  };
+
+// template<typename FLOAT> 
+//   requires RealOrComplexFloatingPoint<FLOAT>
+//   Polynomial1D<T> operator+(Polynomial1D<FLOAT>  b) {
+//     auto maxnum = std::max(this->Degree(), b.Degree());
+//     auto minnum = std::min(this->Degree(), b.Degree());
+//     std::vector<T> myval;
+//     for (int idx = 0; idx < maxnum+1; ++idx){
+//       if (idx < this->Degree() && idx < b.Degree()){
+//         myval.push_back(_a[idx]+b.polycoeff()[idx]);
+//       } else if (idx > this->Degree() && idx < b.Degree()){
+//         myval.push_back(b.polycoeff()[idx]);
+//       } else if (idx < this->Degree() && idx > b.Degree()){
+//         myval.push_back(_a[idx]);
+//     }}
+//     // myval[0] += b;
+//     Polynomial1D<T> res{myval};
+//     return res;
+//   };
+
 
   
 
