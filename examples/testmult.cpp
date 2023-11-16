@@ -1,7 +1,11 @@
-#include <PlanetaryModel/All>
-#include <concepts>
+// #include <PlanetaryModel/All>
+#include <Interpolation/All>
+#include <algorithm>
+#include <cmath>
+#include <fstream>
 #include <iostream>
-
+#include <iterator>
+#include <vector>
 // #include "PREM.h"
 
 // class DummyClass {};
@@ -28,5 +32,7 @@ int main() {
   // polynomials:
   Interpolation::Polynomial1D<double> vecpoly{1.0, 2.0};
   Interpolation::Polynomial1D<double> vecpoly2 = vecpoly * 2.0;
+  vecpoly2 += vecpoly;
+  std::cout << vecpoly2.polycoeff(0) << vecpoly2.polycoeff(1) << std::endl;
   //   vecpoly2 = vecpoly * 2.0;
 }

@@ -8,6 +8,8 @@ target_link_libraries(CubicSplineExample Interpolation)
 add_executable(LagrangeExample LagrangeExample.cpp)
 target_link_libraries(LagrangeExample Interpolation)
 
+add_executable(testmult testmult.cpp)
+target_link_libraries(testmult Interpolation)
 
 
 
