@@ -83,9 +83,17 @@ class Polynomial1D {
   // Returns integral over [a,b].
   T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
-//output 
+//output coefficient vector
 std::vector<T> polycoeff() {
   return this->_a;
+};
+T polycoeff(int i){
+  if (i > this->Degree()){
+    return 0.0;
+  } else{
+return this->_a[i];
+  }
+  
 };
 
 
@@ -135,24 +143,37 @@ template<typename FLOAT>
     return res;
   };
 
-// template<typename FLOAT> 
-//   requires RealOrComplexFloatingPoint<FLOAT>
-//   Polynomial1D<T> operator+(Polynomial1D<FLOAT>  b) {
-//     auto maxnum = std::max(this->Degree(), b.Degree());
-//     auto minnum = std::min(this->Degree(), b.Degree());
-//     std::vector<T> myval;
-//     for (int idx = 0; idx < maxnum+1; ++idx){
+template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> &operator+=(const Polynomial1D<FLOAT>&  b) {
+
+    bool sdeg = (this->Degree() < b.Degree());
+    for (int idx = 0; idx < this->Degree() +1; ++idx){
+      this->_a[idx] += b.polycoeff(idx);
+    }
+    if (sdeg){
+    for (int idx = this->Degree() +1; idx < b.Degree()+1; ++idx){
+        this->_a.push_back(b.poycoeff(idx));
+    }; };
+    return *this;
+    };
+
+// for (int idx = 0; idx < minnum+1; ++idx){
+//       if (sdeg){
+//         _a[i]+=
+//       }
 //       if (idx < this->Degree() && idx < b.Degree()){
 //         myval.push_back(_a[idx]+b.polycoeff()[idx]);
 //       } else if (idx > this->Degree() && idx < b.Degree()){
 //         myval.push_back(b.polycoeff()[idx]);
 //       } else if (idx < this->Degree() && idx > b.Degree()){
 //         myval.push_back(_a[idx]);
-//     }}
-//     // myval[0] += b;
-//     Polynomial1D<T> res{myval};
-//     return res;
-//   };
+//     }};
+
+    // myval[0] += b;
+    // Polynomial1D<T> res{myval};
+    // return res;
+  // };
 
 
   
