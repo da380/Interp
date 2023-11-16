@@ -143,20 +143,20 @@ template<typename FLOAT>
     return res;
   };
 
-template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
-  Polynomial1D<T> &operator+=(const Polynomial1D<FLOAT>&  b) {
+// template<typename FLOAT> 
+//   requires RealOrComplexFloatingPoint<FLOAT>
+//   Polynomial1D<T> &operator+=(const Polynomial1D<FLOAT>&  b) {
 
-    bool sdeg = (this->Degree() < b.Degree());
-    for (int idx = 0; idx < this->Degree() +1; ++idx){
-      _a[idx] += b.polycoeff(idx);
-    }
-    if (sdeg){
-    for (int idx = this->Degree() +1; idx < b.Degree()+1; ++idx){
-        _a.push_back(b.polycoeff(idx));
-    }; };
-    return *this;
-    };
+//     bool sdeg = (this->Degree() < b.Degree());
+//     for (int idx = 0; idx < this->Degree() +1; ++idx){
+//       _a[idx] += b.polycoeff(idx);
+//     }
+//     if (sdeg){
+//     for (int idx = this->Degree() +1; idx < b.Degree()+1; ++idx){
+//         _a.push_back(b.polycoeff(idx));
+//     }; };
+//     return *this;
+//     };
 
 // for (int idx = 0; idx < minnum+1; ++idx){
 //       if (sdeg){
