@@ -18,11 +18,18 @@ class Polynomial1D {
   // Type alias for the scalar.
   using value_type = T;
 
+//Constructor default
+Polynomial1D() = default;
+
   // Construct from std::vector.
   Polynomial1D(std::vector<T> a) : _a{a} {}
 
   // Construct from std::initializer list.
   Polynomial1D(std::initializer_list<T> list) : _a{std::vector<T>{list}} {}
+
+//
+   Polynomial1D(const Polynomial1D&) = default;
+   Polynomial1D(Polynomial1D&&) = default;
 
   // Return a real random polynomial of given degree.
   static Polynomial1D Random(int n)
@@ -98,6 +105,13 @@ return this->_a[i];
 
 
 //addition operator
+template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> &operator+=(FLOAT  b) {
+    _a[0]+=b;
+    return *this;
+    };
+
   template<typename FLOAT> 
   requires RealOrComplexFloatingPoint<FLOAT>
   Polynomial1D<T> operator+(FLOAT b) {
@@ -108,6 +122,12 @@ return this->_a[i];
   };
 
 //subtraction operator
+template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> &operator-=(FLOAT  b) {
+    _a[0]-=b;
+    return *this;
+    };
   template<typename FLOAT> 
   requires RealOrComplexFloatingPoint<FLOAT>
   Polynomial1D<T> operator-(FLOAT b) {
@@ -118,6 +138,14 @@ return this->_a[i];
   };
 
   // multiplication operator
+  template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> &operator*=(FLOAT  b) {
+    for (int idx = 0; idx < this->Degree() +1; ++idx){
+      _a[idx] *= b;
+    };
+    return *this;
+    };
   template<typename FLOAT> 
   requires RealOrComplexFloatingPoint<FLOAT>
   Polynomial1D<T> operator*(FLOAT b) {
@@ -131,6 +159,14 @@ return this->_a[i];
   };
 
 // division operator
+template<typename FLOAT> 
+  requires RealOrComplexFloatingPoint<FLOAT>
+  Polynomial1D<T> &operator/=(FLOAT  b) {
+    for (int idx = 0; idx < this->Degree() +1; ++idx){
+      _a[idx] /= b;
+    };
+    return *this;
+    };
 template<typename FLOAT> 
   requires RealOrComplexFloatingPoint<FLOAT>
   Polynomial1D<T> operator/(FLOAT b) {
@@ -158,22 +194,7 @@ template<typename FLOAT>
     return *this;
     };
 
-// for (int idx = 0; idx < minnum+1; ++idx){
-//       if (sdeg){
-//         _a[i]+=
-//       }
-//       if (idx < this->Degree() && idx < b.Degree()){
-//         myval.push_back(_a[idx]+b.polycoeff()[idx]);
-//       } else if (idx > this->Degree() && idx < b.Degree()){
-//         myval.push_back(b.polycoeff()[idx]);
-//       } else if (idx < this->Degree() && idx > b.Degree()){
-//         myval.push_back(_a[idx]);
-//     }};
 
-    // myval[0] += b;
-    // Polynomial1D<T> res{myval};
-    // return res;
-  // };
 //ostream
 friend std::ostream& operator<<(std::ostream& os, const Polynomial1D<T>& obj)
 {
