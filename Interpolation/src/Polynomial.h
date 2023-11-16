@@ -174,13 +174,23 @@ template<typename FLOAT>
     // Polynomial1D<T> res{myval};
     // return res;
   // };
-
+//ostream
+friend std::ostream& operator<<(std::ostream& os, const Polynomial1D<T>& obj)
+{
+  // Write obj to stream
+  for (int idx = 0; idx < obj.Degree() + 1; ++idx){
+    os << obj.polycoeff(idx) << " ";
+  }
+  return os;
+};
 
   
 
  private:
   std::vector<T> _a;  // Vector of polynomial coefficients.
 };
+
+
 
 }  // namespace Interpolation
 

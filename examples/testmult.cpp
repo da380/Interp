@@ -34,5 +34,6 @@ int main() {
   Interpolation::Polynomial1D<double> vecpoly2 = vecpoly * 2.0;
   vecpoly2 += vecpoly;
   std::cout << vecpoly2.polycoeff(0) << vecpoly2.polycoeff(1) << std::endl;
+  std::cout << vecpoly2 << std::endl;
   //   vecpoly2 = vecpoly * 2.0;
 }
