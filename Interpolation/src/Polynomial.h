@@ -149,11 +149,11 @@ template<typename FLOAT>
 
     bool sdeg = (this->Degree() < b.Degree());
     for (int idx = 0; idx < this->Degree() +1; ++idx){
-      this->_a[idx] += b.polycoeff(idx);
+      _a[idx] += b.polycoeff(idx);
     }
     if (sdeg){
     for (int idx = this->Degree() +1; idx < b.Degree()+1; ++idx){
-        this->_a.push_back(b.poycoeff(idx));
+        _a.push_back(b.polycoeff(idx));
     }; };
     return *this;
     };
