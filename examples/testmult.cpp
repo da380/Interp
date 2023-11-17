@@ -88,7 +88,7 @@ int main() {
   std::cout << std::endl;
   std::cout << "Initial: " << vecpoly << std::endl;
   std::cout << "Multiplier: " << vecpoly3 << std::endl;
-  Interpolation::Polynomial1D<double> vecpoly4 = vecpoly3 * vecpoly;
+  Interpolation::Polynomial1D<float> vecpoly4 = vecpoly3 * vecpoly;
   std::cout << "Final: " << vecpoly4 << std::endl;
 
   //   vecpoly2 = vecpoly * 2.0;

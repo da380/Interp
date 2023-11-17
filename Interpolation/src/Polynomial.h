@@ -29,11 +29,26 @@ Polynomial1D() = default;
   Polynomial1D(std::initializer_list<T> list) : _a{std::vector<T>{list}} {}
 
 //
-
+  
    Polynomial1D(const Polynomial1D&) = default;
    Polynomial1D(Polynomial1D&&) = default;
 
 
+  //defining equals
+  template<typename FLOAT>
+  requires std::is_convertible_v<FLOAT,T>
+  Polynomial1D(Polynomial1D<FLOAT> polinit) {
+    // this->_a = polinit.polycoeff();
+    std::vector<FLOAT> mtmp = polinit.polycoeff();
+    std::transform(mtmp.begin(), mtmp.end(), std::back_inserter(this->_a), [](double val) -> float { return (float)val; });
+    // _a(mtmp.begin(), mtmp.end());
+  }
+  template<typename FLOAT>
+  requires std::is_convertible_v<FLOAT,T>
+  Polynomial1D<T>& operator=(Polynomial1D<FLOAT>& polinit){
+    this->_a = polinit.polycoeff();
+    return *this;
+  }
   // Return a real random polynomial of given degree.
   static Polynomial1D Random(int n)
   requires RealFloatingPoint<T>
