@@ -22,14 +22,17 @@ class Polynomial1D {
 Polynomial1D() = default;
 
   // Construct from std::vector.
-  Polynomial1D(std::vector<T> a) : _a{a} {}
+  Polynomial1D(std::vector<T>& a) : _a{a} {}
+   Polynomial1D(std::vector<T>&& a) : _a{std::move(a)} {}
 
   // Construct from std::initializer list.
   Polynomial1D(std::initializer_list<T> list) : _a{std::vector<T>{list}} {}
 
 //
+
    Polynomial1D(const Polynomial1D&) = default;
    Polynomial1D(Polynomial1D&&) = default;
+
 
   // Return a real random polynomial of given degree.
   static Polynomial1D Random(int n)
@@ -97,90 +100,57 @@ std::vector<T> polycoeff() const {
 T polycoeff(int i) const{
   if (i > this->Degree()){
     return 0.0;
-  } else{
+  } else if (i < 0) {
+    return 0.0;
+    } else{
 return this->_a[i];
   }
   
 };
 
-
-//addition operator
+// self operators, ie ()= operators
+//addition 
 template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
+  requires std::is_convertible_v<FLOAT, T>
   Polynomial1D<T> &operator+=(FLOAT  b) {
     _a[0]+=b;
     return *this;
     };
 
-  template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
-  Polynomial1D<T> operator+(FLOAT b) {
-    std::vector<T> myval = _a;
-    myval[0] += b;
-    Polynomial1D<T> res{myval};
-    return res;
-  };
-
-//subtraction operator
+//subtraction 
 template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
+  requires std::is_convertible_v<FLOAT, T>
   Polynomial1D<T> &operator-=(FLOAT  b) {
     _a[0]-=b;
     return *this;
     };
-  template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
-  Polynomial1D<T> operator-(FLOAT b) {
-    std::vector<T> myval = _a;
-    myval[0] -= b;
-    Polynomial1D<T> res{myval};
-    return res;
-  };
+  
 
-  // multiplication operator
+  // multiplication 
   template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
+  requires std::is_convertible_v<FLOAT, T>
   Polynomial1D<T> &operator*=(FLOAT  b) {
     for (int idx = 0; idx < this->Degree() +1; ++idx){
       _a[idx] *= b;
     };
     return *this;
     };
-  template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
-  Polynomial1D<T> operator*(FLOAT b) {
-    std::vector<T> myval;
-    typename std::vector<T>::iterator iter = _a.begin();
-    for (iter; iter < _a.end(); ++iter){
-      myval.push_back(b * iter[0]);
-    }
-    Polynomial1D<T> res{myval};
-    return res;
-  };
+  
 
-// division operator
+// division 
 template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
+  requires std::is_convertible_v<FLOAT, T>
   Polynomial1D<T> &operator/=(FLOAT  b) {
     for (int idx = 0; idx < this->Degree() +1; ++idx){
       _a[idx] /= b;
     };
     return *this;
     };
-template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
-  Polynomial1D<T> operator/(FLOAT b) {
-    std::vector<T> myval;
-    typename std::vector<T>::iterator iter = _a.begin();
-    for (iter; iter < _a.end(); ++iter){
-      myval.push_back(iter[0]/b);
-    }
-    Polynomial1D<T> res{myval};
-    return res;
-  };
 
+
+//+= operator with polynomial
 template<typename FLOAT> 
-  requires RealOrComplexFloatingPoint<FLOAT>
+  requires std::is_convertible_v<FLOAT, T>
   Polynomial1D<T> &operator+=(const Polynomial1D<FLOAT>&  b) {
 
     bool sdeg = (this->Degree() < b.Degree());
@@ -194,6 +164,37 @@ template<typename FLOAT>
     return *this;
     };
 
+//-= operator with polynomial
+template<typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+  Polynomial1D<T> &operator-=(const Polynomial1D<FLOAT>&  b) {
+
+    bool sdeg = (this->Degree() < b.Degree());
+    for (int idx = 0; idx < this->Degree() +1; ++idx){
+      _a[idx] -= b.polycoeff(idx);
+    };
+    if (sdeg){
+    for (int idx = this->Degree() +1; idx < b.Degree()+1; ++idx){
+        _a.push_back(-b.polycoeff(idx));
+    }; };
+    return *this;
+    };
+
+//*= operator with polynomial
+template<typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+  Polynomial1D<T> &operator*=(const Polynomial1D<FLOAT>&  b) {
+    int maxc = this->Degree() + b.Degree();
+
+     std::vector<T> newcoeff(maxc + 1,0.0);
+    for (int idx = 0; idx < maxc + 1; ++idx){
+      for (int idx2 = 0; idx2 < idx+1; ++idx2){
+        newcoeff[idx] += this->polycoeff(idx2) * b.polycoeff(idx - idx2);
+      }
+    };
+    this->_a = std::move(newcoeff);
+    return *this;
+    };
 
 //ostream
 friend std::ostream& operator<<(std::ostream& os, const Polynomial1D<T>& obj)
@@ -212,7 +213,77 @@ friend std::ostream& operator<<(std::ostream& os, const Polynomial1D<T>& obj)
 };
 
 
-
 }  // namespace Interpolation
+
+//non-member operators
+template<typename T, typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+  Interpolation::Polynomial1D<T> operator+(Interpolation::Polynomial1D<T> a, FLOAT b) {
+    Interpolation::Polynomial1D<T> myval = a;
+    myval += b;
+    return myval;
+  };
+
+  template<typename T,typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+  Interpolation::Polynomial1D<T> operator-(Interpolation::Polynomial1D<T> a, FLOAT b) {
+    Interpolation::Polynomial1D<T> myval = a;
+    myval -= b;
+    return myval;
+  };
+
+  template<typename T, typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+   Interpolation::Polynomial1D<T> operator*(Interpolation::Polynomial1D<T> a, FLOAT b) {
+    Interpolation::Polynomial1D<T> myval = a;
+    myval *= b;
+    return myval;
+  };
+
+template<typename T, typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+   Interpolation::Polynomial1D<T> operator/(Interpolation::Polynomial1D<T> a, FLOAT b) {
+    Interpolation::Polynomial1D<T> myval = a;
+    myval /= b;
+    return myval;
+  };
+
+  template<typename T, typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+  Interpolation::Polynomial1D<T> operator+(const Interpolation::Polynomial1D<T>&  a, const Interpolation::Polynomial1D<FLOAT>&  b) {
+    int maxval = std::max(a.Degree(), b.Degree());
+    std::vector<T> myvec(maxval + 1, 0.0);
+    for (int idx = 0; idx < maxval + 1; ++idx){
+      myvec[idx] = a.polycoeff(idx) + b.polycoeff(idx);
+    };
+    Interpolation::Polynomial1D<T> myval{myvec};
+    return myval;
+    };
+
+    template<typename T, typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+  Interpolation::Polynomial1D<T> operator-(const Interpolation::Polynomial1D<T>&  a, const Interpolation::Polynomial1D<FLOAT>&  b) {
+    int maxval = std::max(a.Degree(), b.Degree());
+    std::vector<T> myvec(maxval + 1, 0.0);
+    for (int idx = 0; idx < maxval + 1; ++idx){
+      myvec[idx] = a.polycoeff(idx) - b.polycoeff(idx);
+    };
+    Interpolation::Polynomial1D<T> myval{myvec};
+    return myval;
+    };
+
+    template<typename T, typename FLOAT> 
+  requires std::is_convertible_v<FLOAT, T>
+  Interpolation::Polynomial1D<T> operator*(const Interpolation::Polynomial1D<T>&  a, const Interpolation::Polynomial1D<FLOAT>&  b){
+    int maxc = a.Degree() + b.Degree();
+     std::vector<T> newcoeff(maxc + 1,0.0);
+    for (int idx = 0; idx < maxc + 1; ++idx){
+      for (int idx2 = 0; idx2 < idx+1; ++idx2){
+        newcoeff[idx] += a.polycoeff(idx2) * b.polycoeff(idx - idx2);
+      }
+    };
+    Interpolation::Polynomial1D<T> myval{newcoeff};
+    return myval;
+    };
 
 #endif  // INTERPOLATION_POLYNOMIAL_GUARD_H

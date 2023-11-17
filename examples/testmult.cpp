@@ -17,17 +17,20 @@
 // }
 
 int main() {
-//   auto myprem = PREM();
-//   // //     for (int i = 0; i < 13; ++i){
-//   // // std::cout << myprem.Density(i)(0) << " " << myprem.VPH(i)(0) << " " <<
-//   // myprem.A(i)(0) << std::endl;
-//   // //     }
-//   //     std::cout << myprem.DensityNorm() << " "  << std::endl;
-//   static_assert(
-//       PlanetaryModel::HasNormalisationInformation<EarthConstants<double> >);
-//   static_assert(PlanetaryModel::SphericalGeometryModel<PREM<double, int> >);
-//   static_assert(PlanetaryModel::SphericalDensityModel<PREM<double, int> >);
-//   static_assert(PlanetaryModel::SphericalElasticModel<PREM<double, int> >);
+  //   auto myprem = PREM();
+  //   // //     for (int i = 0; i < 13; ++i){
+  //   // // std::cout << myprem.Density(i)(0) << " " << myprem.VPH(i)(0) << " "
+  //   <<
+  //   // myprem.A(i)(0) << std::endl;
+  //   // //     }
+  //   //     std::cout << myprem.DensityNorm() << " "  << std::endl;
+  //   static_assert(
+  //       PlanetaryModel::HasNormalisationInformation<EarthConstants<double>
+  //       >);
+  //   static_assert(PlanetaryModel::SphericalGeometryModel<PREM<double, int>
+  //   >); static_assert(PlanetaryModel::SphericalDensityModel<PREM<double, int>
+  //   >); static_assert(PlanetaryModel::SphericalElasticModel<PREM<double, int>
+  //   >);
 
   // polynomials:
   // Interpolation::Polynomial1D<double> vecpoly{1.0, 2.0};
@@ -39,18 +42,18 @@ int main() {
 
   Interpolation::Polynomial1D<double> vecpoly{1.0, 2.0};
   Interpolation::Polynomial1D<double> vecpoly3{1.0, 2.0};
-  Interpolation::Polynomial1D<double> vecpolyadd = vecpoly + 2.0;
+  Interpolation::Polynomial1D<double> vecpolyadd = vecpoly + 2;
   Interpolation::Polynomial1D<double> vecpolysub = vecpoly - 2.0;
-  Interpolation::Polynomial1D<double> vecpolymult = vecpoly* 2.0;
-  Interpolation::Polynomial1D<double> vecpolydiv = vecpoly/2.0;
-  Interpolation::Polynomial1D<double> vecpoly2{1.0,2.0,3.0};
+  Interpolation::Polynomial1D<double> vecpolymult = vecpoly * 2.0;
+  Interpolation::Polynomial1D<double> vecpolydiv = vecpoly / 2.0;
+  Interpolation::Polynomial1D<double> vecpoly2{1.0, 2.0, 3.0};
   
+
   std::cout << "Initial: " << vecpoly << std::endl;
   std::cout << "Addition of 2: " << vecpolyadd << std::endl;
   std::cout << "Subtraction by 2: " << vecpolysub << std::endl;
   std::cout << "Multiplication by 2: " << vecpolymult << std::endl;
   std::cout << "Division by 2: " << vecpolydiv << std::endl << std::endl;
-
 
   std::cout << "Initial: " << vecpoly3 << std::endl;
   vecpoly3 += vecpoly2;
@@ -66,5 +69,27 @@ int main() {
   std::cout << "Final: " << vecpoly3 << std::endl;
   vecpoly3 /= 2.0;
   std::cout << "Final: " << vecpoly3 << std::endl;
+  vecpoly3 += vecpoly;
+  std::cout << "Final: " << vecpoly3 << std::endl;
+  vecpoly3 -= vecpoly;
+  std::cout << "Final: " << vecpoly3 << std::endl;
+
+  std::cout << std::endl;
+  std::cout << "Initial: " << vecpoly3 << std::endl;
+  std::cout << "Multiplier: " << vecpoly << std::endl;
+  vecpoly3 *= vecpoly;
+  std::cout << "Final: " << vecpoly3 << std::endl;
+
+  std::cout << std::endl;
+  std::cout << "Initial: " << vecpoly << std::endl;
+  std::cout << "Multiplier: " << vecpoly3 << std::endl;
+  vecpoly *= vecpoly3;
+  std::cout << "Final: " << vecpoly << std::endl;
+  std::cout << std::endl;
+  std::cout << "Initial: " << vecpoly << std::endl;
+  std::cout << "Multiplier: " << vecpoly3 << std::endl;
+  Interpolation::Polynomial1D<double> vecpoly4 = vecpoly3 * vecpoly;
+  std::cout << "Final: " << vecpoly4 << std::endl;
+
   //   vecpoly2 = vecpoly * 2.0;
 }
