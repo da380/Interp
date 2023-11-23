@@ -110,6 +110,8 @@ class Polynomial1D {
     T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
     // output coefficient vector
+    T operator[](int idx) { return this->_a[idx]; }
+
     std::vector<T> polycoeff() const { return this->_a; };
     T polycoeff(int i) const {
         if (i > this->Degree()) {
@@ -119,6 +121,17 @@ class Polynomial1D {
         } else {
             return this->_a[i];
         }
+    };
+
+    // minus operator
+    Polynomial1D<T> operator-() const {
+
+        std::vector<T> myvec(this->Degree() + 1);
+        for (int idx = 0; idx < this->Degree() + 1; ++idx) {
+            myvec[idx] = -this->_a[idx];
+        };
+        Polynomial1D<T> myret{myvec};
+        return myret;
     };
 
     // self operators, ie ()= operators
@@ -234,6 +247,14 @@ operator+(Interpolation::Polynomial1D<T> a, FLOAT b) {
     myval += b;
     return myval;
 };
+template <typename T, typename FLOAT>
+    requires std::is_convertible_v<FLOAT, T>
+Interpolation::Polynomial1D<T>
+operator+(FLOAT b, Interpolation::Polynomial1D<T> a) {
+    Interpolation::Polynomial1D<T> myval = a;
+    myval += b;
+    return myval;
+};
 
 template <typename T, typename FLOAT>
     requires std::is_convertible_v<FLOAT, T>
@@ -243,11 +264,27 @@ operator-(Interpolation::Polynomial1D<T> a, FLOAT b) {
     myval -= b;
     return myval;
 };
+template <typename T, typename FLOAT>
+    requires std::is_convertible_v<FLOAT, T>
+Interpolation::Polynomial1D<T>
+operator-(FLOAT b, Interpolation::Polynomial1D<T> a) {
+    Interpolation::Polynomial1D<T> myval = -a;
+    myval += b;
+    return myval;
+};
 
 template <typename T, typename FLOAT>
     requires std::is_convertible_v<FLOAT, T>
 Interpolation::Polynomial1D<T>
 operator*(Interpolation::Polynomial1D<T> a, FLOAT b) {
+    Interpolation::Polynomial1D<T> myval = a;
+    myval *= b;
+    return myval;
+};
+template <typename T, typename FLOAT>
+    requires std::is_convertible_v<FLOAT, T>
+Interpolation::Polynomial1D<T>
+operator*(FLOAT b, Interpolation::Polynomial1D<T> a) {
     Interpolation::Polynomial1D<T> myval = a;
     myval *= b;
     return myval;
