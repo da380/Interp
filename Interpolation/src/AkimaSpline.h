@@ -74,7 +74,11 @@ Akima<xIter, yIter>::Akima(xIter xS, xIter xF, yIter yS)
         //	  s.push_back((a * m[i - 1] + b * m[i]) / (a +
         // b));
         //    }
-        s.push_back((a * m[i - 1] + b * m[i]) / (a + b));
+        if ((a + b) == 0) {
+            s.push_back((m[i - 1] + m[i]) / 2);
+        } else {
+            s.push_back((a * m[i - 1] + b * m[i]) / (a + b));
+        }
     }
     s.push_back((m[n - 3] + m[n - 2]) * onehalf);
     s.push_back(m[n - 2]);
