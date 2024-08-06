@@ -12,11 +12,13 @@
 namespace Interpolation {
 
 template <typename T>
-    requires RealOrComplexFloatingPoint<T>
+requires RealOrComplexFloatingPoint<T>
 class Polynomial1D {
   public:
     // Type alias for the scalar.
     using value_type = T;
+    using iterator = std::vector<T>::iterator;
+    using const_iterator = std::vector<T>::const_iterator;
 
     // Constructor default
     Polynomial1D() = default;
@@ -28,25 +30,22 @@ class Polynomial1D {
     // Construct from std::initializer list.
     Polynomial1D(std::initializer_list<T> list) : _a{std::vector<T>{list}} {}
 
-    //
-
+    // Copy and move constructors.
     Polynomial1D(const Polynomial1D &) = default;
     Polynomial1D(Polynomial1D &&) = default;
 
-    // defining equals
+    // Copy constructor allowing for conversion of scalar types.
     template <typename FLOAT>
-        requires std::is_convertible_v<FLOAT, T>
-    Polynomial1D(Polynomial1D<FLOAT> polinit) {
-        // this->_a = polinit.polycoeff();
-        std::vector<FLOAT> mtmp = polinit.polycoeff();
-        std::transform(mtmp.begin(), mtmp.end(), std::back_inserter(this->_a),
-                       [](double val) -> float { return (float) val; });
-        // _a(mtmp.begin(), mtmp.end());
+    requires std::is_convertible_v<FLOAT, T>
+    Polynomial1D(const Polynomial1D<FLOAT> &rhs) {
+        std::transform(rhs.cbegin(), rhs.cend(), std::back_inserter(_a),
+                       [](auto x) { return static_cast<T>(x); });
     }
+
     template <typename FLOAT>
-        requires std::is_convertible_v<FLOAT, T>
-    Polynomial1D<T> &operator=(Polynomial1D<FLOAT> &polinit) {
-        this->_a = polinit.polycoeff();
+    requires std::is_convertible_v<FLOAT, T> Polynomial1D<T>
+    &operator=(Polynomial1D<FLOAT> &polinit) {
+        _a = polinit.polycoeff();
         return *this;
     }
     // Return a real random polynomial of given degree.
@@ -109,10 +108,16 @@ class Polynomial1D {
     // Returns integral over [a,b].
     T Integrate(T a, T b) const { return Primative(b) - Primative(a); }
 
-    // output coefficient vector
-    T operator[](int idx) { return this->_a[idx]; }
+    auto begin() { return _a.begin(); }
+    auto end() { return _a.end(); }
 
-    std::vector<T> polycoeff() const { return this->_a; };
+    auto cbegin() const { return _a.cbegin(); }
+    auto cend() const { return _a.cend(); }
+
+    // output coefficient vector
+    T operator[](int idx) { return _a[idx]; }
+
+    std::vector<T> polycoeff() const { return _a; };
     T polycoeff(int i) const {
         if (i > this->Degree()) {
             return 0.0;

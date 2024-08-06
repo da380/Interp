@@ -5,6 +5,7 @@
 #include <Eigen/SparseCholesky>
 #include <Eigen/SparseCore>
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <iterator>
 #include <vector>
