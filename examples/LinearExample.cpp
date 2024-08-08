@@ -1,32 +1,14 @@
-
 #include <Interpolation/All>
-#include <algorithm>
-#include <cmath>
-#include <fstream>
 #include <iostream>
-#include <iterator>
-#include <vector>
 
-int main() {
-  using namespace Interpolation;
+using namespace Interpolation;
 
-  int n = 10;
-  std::vector<double> x(n);
-  std::vector<std::complex<double>> y(n);
+int
+main() {
 
-  auto func = [](double x) { return std::sin(x); };
+    using Real = double;
 
-  for (int i = 0; i < n; i++) {
-    x[i] = static_cast<double>(i) / static_cast<double>(n - 1);
-    y[i] = func(x[i]);
-  }
+    auto f = Linear<Real, Real>();
 
-  Linear f(x.begin(), x.end(), y.begin());
-
-  int m = 50;
-  std::ofstream file("Linear.out");
-  for (int i = 0; i < m; i++) {
-    auto x = static_cast<double>(i) / static_cast<double>(m - 1);
-    file << x << " " << func(x) << " " << f(x) << std::endl;
-  }
+    std::cout << f(2) << std::endl;
 }
