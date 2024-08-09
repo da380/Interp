@@ -1,16 +1,18 @@
 
-#ifndef INTERPOLATION_TRAITS_GUARD_H
-#define INTERPOLATION_TRAITS_GUARD_H
+#pragma once
 
 namespace Interpolation {
 
 // Set up the internal traits struct.
+
+namespace OneDimensional {
+
 namespace Internal {
 
 template <typename Derived> struct Traits {};
 
 }   // namespace Internal
 
-}   // namespace Interpolation
+}   // namespace OneDimensional
 
-#endif
+}   // namespace Interpolation

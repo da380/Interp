@@ -1,29 +1,28 @@
-#ifndef INTERPOLATION_FUNCTION_1D_GUARD_H
-#define INTERPOLATION_FUNCTION_1D_GUARD_H
+#pragma once
 
 #include "Traits.h"
 #include <cassert>
 
 namespace Interpolation {
 
-template <typename Derived> class Function1D {
+namespace OneDimensional {
+
+template <typename Derived> class Function {
   public:
     using Real = typename Internal::Traits<Derived>::Real;
     using Scalar = typename Internal::Traits<Derived>::Scalar;
 
-    /*
-    template <std::integral N> auto Evaluate(Real x) const {
-        return GetDerived().Evaluate<N>(x);
+    template <int N> auto Evaluate(Real x) const {
+        return GetDerived().template Evaluate<N>(x);
     }
-*/
 
-    auto operator()(Real x) const { return 0; }
+    auto operator()(Real x) const { return Evaluate<0>(x); }
 
   private:
     auto &GetDerived() const { return static_cast<const Derived &>(*this); }
     auto &GetDerived() { return static_cast<Derived &>(*this); }
 };
 
-}   // namespace Interpolation
+}   // namespace OneDimensional
 
-#endif   // INTERPOLATION_BASE_1D_GUARD_H
+}   // namespace Interpolation
