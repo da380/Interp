@@ -6,6 +6,8 @@
 #include "src/OneDimensional/Derivative.h"
 #include "src/OneDimensional/Function.h"
 #include "src/OneDimensional/Linear.h"
+#include "src/OneDimensional/Polynomial.h"
+#include "src/OneDimensional/Product.h"
 #include "src/OneDimensional/Sum.h"
 #include "src/OneDimensional/Utility.h"
 

@@ -65,66 +65,12 @@ class CubicSpline : public Function<CubicSpline<XView, YView>> {
         assert(_x.size() == _y.size());
         assert(std::ranges::is_sorted(_x));
 
-        // Set up the sparse matrix.
-        const auto n = _x.size();
-        Matrix A(n, n);
-        A.reserve(Eigen::VectorXi::Constant(n, 3));
+        // Build the spline matrix.
+        auto A = CubicSplineMatrix<Real, Scalar, XView>(_x, left, right);
 
-        // set some constants
-        constexpr auto oneThird = static_cast<Real>(1) / static_cast<Real>(3);
-        constexpr auto oneSixth = static_cast<Real>(1) / static_cast<Real>(6);
-
-        // Add in the upper diagonal.
-        if (left.Clamped()) {
-            A.insert(0, 1) = oneSixth * (_x[1] - _x[0]);
-        }
-        for (int i = 1; i < n - 1; ++i) {
-            A.insert(i, i + 1) = oneSixth * (_x[i] - _x[i - 1]);
-        }
-
-        // Add in the lower diagonal.
-        for (int i = 0; i < n - 2; ++i) {
-            A.insert(i + 1, i) = oneSixth * (_x[i + 1] - _x[i]);
-        }
-        if (right.Clamped()) {
-            A.insert(n - 1, n - 2) = oneSixth * (_x[n - 1] - _x[n - 2]);
-        }
-
-        // Add in the diagonal.
-        if (!left.Clamped()) {
-            A.insert(0, 0) = 1;
-        } else {
-            A.insert(0, 0) = oneThird * (_x[1] - _x[0]);
-        }
-        for (int i = 1; i < n - 1; ++i) {
-            A.insert(i, i) = oneThird * (_x[i + 1] - _x[i - 1]);
-        }
-        if (!right.Clamped()) {
-            A.insert(n - 1, n - 1) = 1;
-        } else {
-            A.insert(n - 1, n - 1) = oneThird * (_x[n - 1] - _x[n - 2]);
-        }
-
-        // Finalise the matrix construction.
-        A.makeCompressed();
-
-        // Set the right hand side.
-        Vector rhs(n);
-        if (!left.Clamped()) {
-            rhs(0) = 0;
-        } else {
-            rhs(0) = (_y[1] - _y[0]) / (_x[1] - _x[0]) - left();
-        }
-        for (int i = 1; i < n - 1; i++) {
-            rhs(i) = (_y[i + 1] - _y[i]) / (_x[i + 1] - _x[i]) -
-                     (_y[i] - _y[i - 1]) / (_x[i] - _x[i - 1]);
-        }
-        if (!right.Clamped()) {
-            rhs(n - 1) = 0;
-        } else {
-            rhs(n - 1) =
-                right() - (_y[n - 1] - _y[n - 2]) / (_x[n - 1] - _x[n - 2]);
-        }
+        // Build the right hand side.
+        auto rhs =
+            CubicSplineRHS<Real, Scalar, XView, YView>(x, y, left, right);
 
         // Solve the linear system.
         Eigen::SimplicialLDLT<Matrix> solver;
@@ -135,7 +81,7 @@ class CubicSpline : public Function<CubicSpline<XView, YView>> {
 
     template <int N>
     auto Evaluate(Real x) const
-        requires(N <= 2)
+        requires(N >= 0 && N <= 2)
     {
         constexpr auto oneSixth = static_cast<Real>(1) / static_cast<Real>(6);
         auto i2 = std::distance(_x.begin(), Find(_x, x));
@@ -161,9 +107,9 @@ class CubicSpline : public Function<CubicSpline<XView, YView>> {
   private:
     using Vector = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
     using Matrix = Eigen::SparseMatrix<Scalar>;
+
     XView _x;
     YView _y;
-
     Vector _ypp;
 };
 
@@ -172,6 +118,87 @@ template <std::ranges::viewable_range XView, std::ranges::viewable_range YView>
 CubicSpline(XView &&,
             YView &&) -> CubicSpline<std::ranges::views::all_t<XView>,
                                      std::ranges::views::all_t<YView>>;
+
+// Build the sparse matrix for the spline problem
+template <RealFloatingPoint Real, RealOrComplexFloatingPoint Scalar,
+          RealView View>
+auto
+CubicSplineMatrix(View x, CubicSplineBC<Scalar> left,
+                  CubicSplineBC<Scalar> right) {
+
+    using Matrix = Eigen::SparseMatrix<Scalar>;
+
+    // Set up the sparse matrix.
+    const auto n = x.size();
+    auto A = Matrix(n, n);
+    A.reserve(Eigen::VectorXi::Constant(n, 3));
+
+    // set some constants
+    constexpr auto oneThird = static_cast<Real>(1) / static_cast<Real>(3);
+    constexpr auto oneSixth = static_cast<Real>(1) / static_cast<Real>(6);
+
+    // Add in the upper diagonal.
+    if (left.Clamped()) {
+        A.insert(0, 1) = oneSixth * (x[1] - x[0]);
+    }
+    for (int i = 1; i < n - 1; ++i) {
+        A.insert(i, i + 1) = oneSixth * (x[i] - x[i - 1]);
+    }
+
+    // Add in the lower diagonal.
+    for (int i = 0; i < n - 2; ++i) {
+        A.insert(i + 1, i) = oneSixth * (x[i + 1] - x[i]);
+    }
+    if (right.Clamped()) {
+        A.insert(n - 1, n - 2) = oneSixth * (x[n - 1] - x[n - 2]);
+    }
+
+    // Add in the diagonal.
+    if (!left.Clamped()) {
+        A.insert(0, 0) = 1;
+    } else {
+        A.insert(0, 0) = oneThird * (x[1] - x[0]);
+    }
+    for (int i = 1; i < n - 1; ++i) {
+        A.insert(i, i) = oneThird * (x[i + 1] - x[i - 1]);
+    }
+    if (!right.Clamped()) {
+        A.insert(n - 1, n - 1) = 1;
+    } else {
+        A.insert(n - 1, n - 1) = oneThird * (x[n - 1] - x[n - 2]);
+    }
+
+    // Finalise the matrix construction.
+    A.makeCompressed();
+
+    return A;
+}
+
+template <RealFloatingPoint Real, RealOrComplexFloatingPoint Scalar,
+          RealView XView, RealOrComplexView YView>
+auto
+CubicSplineRHS(XView x, YView y, CubicSplineBC<Scalar> left,
+               CubicSplineBC<Scalar> right) {
+
+    using Vector = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+    auto n = x.size();
+    auto rhs = Vector(n);
+    if (!left.Clamped()) {
+        rhs(0) = 0;
+    } else {
+        rhs(0) = (y[1] - y[0]) / (x[1] - x[0]) - left();
+    }
+    for (int i = 1; i < n - 1; i++) {
+        rhs(i) = (y[i + 1] - y[i]) / (x[i + 1] - x[i]) -
+                 (y[i] - y[i - 1]) / (x[i] - x[i - 1]);
+    }
+    if (!right.Clamped()) {
+        rhs(n - 1) = 0;
+    } else {
+        rhs(n - 1) = right() - (y[n - 1] - y[n - 2]) / (x[n - 1] - x[n - 2]);
+    }
+    return rhs;
+}
 
 }   // namespace OneDimensional
 
