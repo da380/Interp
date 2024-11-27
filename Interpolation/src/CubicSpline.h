@@ -154,12 +154,6 @@ template <typename xIter, typename yIter>
     requires InterpolationIteratorPair<xIter, yIter>
 CubicSpline<xIter, yIter>::y_value_type
 CubicSpline<xIter, yIter>::operator()(x_value_type x) const {
-
-    for (auto iter = _xS; iter != _xF; iter++) {
-        std::cout << *iter << " ";
-    }
-    std::cout << x << std::endl;
-
     // Find the first element larger than x.
     auto iter = std::upper_bound(_xS, _xF, x);
     // Adjust the iterator if out of range.
