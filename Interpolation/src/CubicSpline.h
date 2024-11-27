@@ -61,10 +61,9 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
     const auto n = std::distance(_xS, _xF);
     assert(std::is_sorted(_xS, _xF));
 
-    // Deal with special case when n == 1
     if (n == 1) {
+        // Deal with special case when n == 1
         _ypp = Vector::Zero(n);
-
     } else {
         // Set up the sparse matrix.
         Matrix A(n, n);
