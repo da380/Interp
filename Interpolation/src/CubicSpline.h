@@ -157,6 +157,7 @@ CubicSpline<xIter, yIter>::operator()(x_value_type x) const {
     if (std::distance(_xS, _xF) == 1) {
         auto i1 = 0;
         auto i2 = 1;
+        auto x1 = _xS[i1];
         auto x2 = _xS[i2];
         auto h = x2 - x1;
         auto a = (x2 - x) / h;
@@ -175,7 +176,8 @@ CubicSpline<xIter, yIter>::operator()(x_value_type x) const {
             static_cast<x_value_type>(1) / static_cast<x_value_type>(6);
         auto i2 = std::distance(_xS, iter);
         auto i1 = i2 - 1;
-        std::cout << i1 << " " << i2 << std auto x1 = _xS[i1];
+        std::cout << i1 << " " << i2 << std::endl;
+        auto x1 = _xS[i1];
         auto x2 = _xS[i2];
         auto h = x2 - x1;
         auto a = (x2 - x) / h;
