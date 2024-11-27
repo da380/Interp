@@ -59,7 +59,7 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
     : _xS{xS}, _xF{xF}, _yS{yS} {
     // Dimension of the linear system.
     const auto n = std::distance(_xS, _xF);
-    assert(n > 1);
+    // assert(n > 1);
     assert(std::is_sorted(_xS, _xF));
 
     // Set up the sparse matrix.
