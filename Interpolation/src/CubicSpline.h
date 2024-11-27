@@ -62,7 +62,7 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
     assert(std::is_sorted(_xS, _xF));
 
     if (n == 1) {
-        // Deal with special case when n == 1
+        //  Deal with special case when n == 1
         _ypp = Vector::Zero(n);
     } else {
         // Set up the sparse matrix.
@@ -155,6 +155,11 @@ template <typename xIter, typename yIter>
 CubicSpline<xIter, yIter>::y_value_type
 CubicSpline<xIter, yIter>::operator()(x_value_type x) const {
 
+    for (auto iter = _xS; iter != _xF; iter++) {
+        std::cout << *iter << " ";
+    }
+    std::cout << x << std::endl;
+
     // Find the first element larger than x.
     auto iter = std::upper_bound(_xS, _xF, x);
     // Adjust the iterator if out of range.
@@ -167,7 +172,6 @@ CubicSpline<xIter, yIter>::operator()(x_value_type x) const {
         static_cast<x_value_type>(1) / static_cast<x_value_type>(6);
     auto i2 = std::distance(_xS, iter);
     auto i1 = i2 - 1;
-    std::cout << i1 << " " << i2 << " " << x << std::endl;
     auto x1 = _xS[i1];
     auto x2 = _xS[i2];
     auto h = x2 - x1;
