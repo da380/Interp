@@ -61,78 +61,73 @@ CubicSpline<xIter, yIter>::CubicSpline(xIter xS, xIter xF, yIter yS,
     const auto n = std::distance(_xS, _xF);
     assert(std::is_sorted(_xS, _xF));
 
-    if (n == 1) {
-        //  Deal with special case when n == 1
-        _ypp = Vector::Zero(n);
-    } else {
-        // Set up the sparse matrix.
-        Matrix A(n, n);
-        A.reserve(Eigen::VectorXi::Constant(n, 3));
+    // Set up the sparse matrix.
+    Matrix A(n, n);
+    A.reserve(Eigen::VectorXi::Constant(n, 3));
 
-        // set some constants
-        constexpr auto oneThird =
-            static_cast<x_value_type>(1) / static_cast<x_value_type>(3);
-        constexpr auto oneSixth =
-            static_cast<x_value_type>(1) / static_cast<x_value_type>(6);
+    // set some constants
+    constexpr auto oneThird =
+        static_cast<x_value_type>(1) / static_cast<x_value_type>(3);
+    constexpr auto oneSixth =
+        static_cast<x_value_type>(1) / static_cast<x_value_type>(6);
 
-        // Add in the upper diagonal.
-        if (left == CubicSplineBC::Clamped) {
-            A.insert(0, 1) = oneSixth * (_xS[1] - _xS[0]);
-        }
-        for (int i = 1; i < n - 1; ++i) {
-            A.insert(i, i + 1) = oneSixth * (_xS[i] - _xS[i - 1]);
-        }
-
-        // Add in the lower diagonal.
-        for (int i = 0; i < n - 2; ++i) {
-            A.insert(i + 1, i) = oneSixth * (_xS[i + 1] - _xS[i]);
-        }
-        if (right == CubicSplineBC::Clamped) {
-            A.insert(n - 1, n - 2) = oneSixth * (_xS[n - 1] - _xS[n - 2]);
-        }
-
-        // Add in the diagonal.
-        if (left == CubicSplineBC::Free) {
-            A.insert(0, 0) = 1;
-        } else {
-            A.insert(0, 0) = oneThird * (_xS[1] - _xS[0]);
-        }
-        for (int i = 1; i < n - 1; ++i) {
-            A.insert(i, i) = oneThird * (_xS[i + 1] - _xS[i - 1]);
-        }
-        if (right == CubicSplineBC::Free) {
-            A.insert(n - 1, n - 1) = 1;
-        } else {
-            A.insert(n - 1, n - 1) = oneThird * (_xS[n - 1] - _xS[n - 2]);
-        }
-
-        // Finalise the matrix construction.
-        A.makeCompressed();
-
-        // Set the right hand side.
-        Vector rhs(n);
-        if (left == CubicSplineBC::Free) {
-            rhs(0) = 0;
-        } else {
-            rhs(0) = (_yS[1] - _yS[0]) / (_xS[1] - _xS[0]) - ypl;
-        }
-        for (int i = 1; i < n - 1; i++) {
-            rhs(i) = (_yS[i + 1] - _yS[i]) / (_xS[i + 1] - _xS[i]) -
-                     (_yS[i] - _yS[i - 1]) / (_xS[i] - _xS[i - 1]);
-        }
-        if (right == CubicSplineBC::Free) {
-            rhs(n - 1) = 0;
-        } else {
-            rhs(n - 1) =
-                ypr - (_yS[n - 1] - _yS[n - 2]) / (_xS[n - 1] - _xS[n - 2]);
-        }
-
-        // Solve the linear system.
-        Eigen::SimplicialLDLT<Matrix> solver;
-        solver.compute(A);
-        _ypp = solver.solve(rhs);
-        assert(solver.info() == Eigen::Success);
+    // Add in the upper diagonal.
+    if (left == CubicSplineBC::Clamped) {
+        A.insert(0, 1) = oneSixth * (_xS[1] - _xS[0]);
     }
+    for (int i = 1; i < n - 1; ++i) {
+        A.insert(i, i + 1) = oneSixth * (_xS[i] - _xS[i - 1]);
+    }
+
+    // Add in the lower diagonal.
+    for (int i = 0; i < n - 2; ++i) {
+        A.insert(i + 1, i) = oneSixth * (_xS[i + 1] - _xS[i]);
+    }
+    if (right == CubicSplineBC::Clamped) {
+        A.insert(n - 1, n - 2) = oneSixth * (_xS[n - 1] - _xS[n - 2]);
+    }
+
+    // Add in the diagonal.
+    if (left == CubicSplineBC::Free) {
+        A.insert(0, 0) = 1;
+    } else {
+        A.insert(0, 0) = oneThird * (_xS[1] - _xS[0]);
+    }
+    for (int i = 1; i < n - 1; ++i) {
+        A.insert(i, i) = oneThird * (_xS[i + 1] - _xS[i - 1]);
+    }
+    if (right == CubicSplineBC::Free) {
+        A.insert(n - 1, n - 1) = 1;
+    } else {
+        A.insert(n - 1, n - 1) = oneThird * (_xS[n - 1] - _xS[n - 2]);
+    }
+
+    // Finalise the matrix construction.
+    A.makeCompressed();
+
+    // Set the right hand side.
+    Vector rhs(n);
+    if (left == CubicSplineBC::Free) {
+        rhs(0) = 0;
+    } else {
+        rhs(0) = (_yS[1] - _yS[0]) / (_xS[1] - _xS[0]) - ypl;
+    }
+    for (int i = 1; i < n - 1; i++) {
+        rhs(i) = (_yS[i + 1] - _yS[i]) / (_xS[i + 1] - _xS[i]) -
+                 (_yS[i] - _yS[i - 1]) / (_xS[i] - _xS[i - 1]);
+    }
+    if (right == CubicSplineBC::Free) {
+        rhs(n - 1) = 0;
+    } else {
+        rhs(n - 1) =
+            ypr - (_yS[n - 1] - _yS[n - 2]) / (_xS[n - 1] - _xS[n - 2]);
+    }
+
+    // Solve the linear system.
+    Eigen::SimplicialLDLT<Matrix> solver;
+    solver.compute(A);
+    _ypp = solver.solve(rhs);
+    assert(solver.info() == Eigen::Success);
 }
 
 // Definition of the constructor for natural splines.
