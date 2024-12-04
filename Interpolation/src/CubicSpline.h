@@ -25,6 +25,9 @@ class CubicSpline {
     using x_value_type = std::iter_value_t<xIter>;
     using y_value_type = std::iter_value_t<yIter>;
 
+    // Default constructor.
+    CubicSpline() = default;
+
     // General constructor.
     CubicSpline(xIter, xIter, yIter, CubicSplineBC, y_value_type, CubicSplineBC,
                 y_value_type);
