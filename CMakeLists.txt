@@ -1,22 +1,22 @@
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 
+project(
+    Interpolation
+    VERSION 0.0.1
+    LANGUAGES CXX)
 
-
-project(Interpolation)
-
-
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
-endif()
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED true)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)    
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+include(FetchContent)
+FetchContent_Declare(
+  NumericConcepts
+  GIT_REPOSITORY https://github.com/da380/NumericConcepts.git
+  GIT_TAG main
+)
+FetchContent_MakeAvailable(NumericConcepts)
 
-# add in Eigen3
 include(FetchContent)
 FetchContent_Declare(
   Eigen3
@@ -25,28 +25,29 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Eigen3)
 
-# Set up the library
-add_library (Interpolation INTERFACE)
-target_link_libraries(Interpolation INTERFACE Eigen3::Eigen)
-target_include_directories (Interpolation INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
-)
+add_library(${PROJECT_NAME} INTERFACE)
+target_link_libraries(Interpolation INTERFACE NumericConcepts Eigen3::Eigen)
 
-
-# optionally add in the examples and tests
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    # We're in the root, define additional targets for developers.
-    option(MY_PROJECT_BUILD_EXAMPLES   "whether or not examples should be built" ON)
-    option(MY_PROJECT_BUILD_TESTS      "whether or not tests should be built" ON)
+    option(BUILD_EXAMPLES   "whether or not examples should be built" ON)
+    option(BUILD_TESTS      "whether or not tests should be built" ON)
 
-    if(MY_PROJECT_BUILD_EXAMPLES)
+    if(BUILD_EXAMPLES)
         add_subdirectory(examples)
     endif()
-    if(MY_PROJECT_BUILD_TESTS)
+    if(BUILD_TESTS)
         enable_testing()
         add_subdirectory(tests)
     endif()
 endif()
+
+include(GNUInstallDirs)
+
+target_include_directories(
+    ${PROJECT_NAME}
+    INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+              $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+
 
 

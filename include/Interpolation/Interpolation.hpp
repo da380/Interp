@@ -1,0 +1,6 @@
+#include "AkimaSpline.hpp"
+#include "Concepts.hpp"
+#include "CubicSpline.hpp"
+#include "Lagrange.hpp"
+#include "Linear.hpp"
+#include "Polynomial.hpp"

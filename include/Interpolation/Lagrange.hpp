@@ -10,11 +10,11 @@
 #include <ranges>
 #include <vector>
 
-#include "Concepts.h"
+#include "NumericConcepts/Iterators.hpp"
 
 namespace Interpolation {
 
-template <RealFloatingPointIterator I> class LagrangePolynomial {
+template <NumericConcepts::RealIterator I> class LagrangePolynomial {
   public:
     using value_t = std::iter_value_t<I>;
 

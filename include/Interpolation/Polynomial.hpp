@@ -7,12 +7,12 @@
 #include <random>
 #include <vector>
 
-#include "Concepts.h"
+#include "NumericConcepts/Numeric.hpp"
 
 namespace Interpolation {
 
-template <typename T>
-requires RealOrComplexFloatingPoint<T>
+template <NumericConcepts::RealOrComplex T>
+
 class Polynomial1D {
   public:
     // Type alias for the scalar.
@@ -36,15 +36,15 @@ class Polynomial1D {
 
     // Copy constructor allowing for conversion of scalar types.
     template <typename FLOAT>
-    requires std::is_convertible_v<FLOAT, T>
+        requires std::is_convertible_v<FLOAT, T>
     Polynomial1D(const Polynomial1D<FLOAT> &rhs) {
         std::transform(rhs.cbegin(), rhs.cend(), std::back_inserter(_a),
                        [](auto x) { return static_cast<T>(x); });
     }
 
     template <typename FLOAT>
-    requires std::is_convertible_v<FLOAT, T> Polynomial1D<T>
-    &operator=(Polynomial1D<FLOAT> &polinit) {
+        requires std::is_convertible_v<FLOAT, T>
+    Polynomial1D<T> &operator=(Polynomial1D<FLOAT> &polinit) {
         _a = polinit.polycoeff();
         return *this;
     }
@@ -73,9 +73,8 @@ class Polynomial1D {
         std::mt19937_64 gen{rd()};
         std::normal_distribution<S> d{};
         std::vector<T> a;
-        std::generate_n(std::back_inserter(a), n + 1, [&]() {
-            return T{d(gen), d(gen)};
-        });
+        std::generate_n(std::back_inserter(a), n + 1,
+                        [&]() { return T{d(gen), d(gen)}; });
         return Polynomial1D(a);
     }
 

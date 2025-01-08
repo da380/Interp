@@ -1,5 +1,5 @@
 
-#include <Interpolation/All>
+#include "Interpolation/Linear.hpp"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
