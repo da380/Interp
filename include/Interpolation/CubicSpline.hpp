@@ -8,9 +8,11 @@
 #include <cassert>
 #include <iostream>
 #include <iterator>
+#include <ranges>
 #include <vector>
 
 #include "NumericConcepts/Iterators.hpp"
+#include "NumericConcepts/Ranges.hpp"
 
 namespace Interpolation {
 
@@ -173,6 +175,166 @@ class CubicSpline {
 
     Vector _ypp;   // Cubic spline coefficients
 };
+
+namespace Ranges {
+
+namespace NC = NumericConcepts;
+template <NC::RealView X, NC::RealOrComplexView Y>
+    requires NC::SameRangePrecision<X, Y>
+class CubicSpline {
+  public:
+    // Define some class member types
+    using Real = std::ranges::range_value_t<X>;
+    using Scalar = std::ranges::range_value_t<Y>;
+
+    // Default constructor.
+    CubicSpline() = default;
+
+    // General constructor.
+    CubicSpline(X x, Y y, CubicSplineBC left, Scalar ypl, CubicSplineBC right,
+                Scalar ypr)
+        : _x{x}, _y{y} {
+        // Dimension of the linear system.
+        const auto n = x.size();
+        assert(std::ranges::is_sorted(_x));
+
+        // Set up the sparse matrix.
+        Matrix A(n, n);
+        A.reserve(Eigen::VectorXi::Constant(n, 3));
+
+        // set some constants
+        constexpr auto oneThird = static_cast<Real>(1) / static_cast<Real>(3);
+        constexpr auto oneSixth = static_cast<Real>(1) / static_cast<Real>(6);
+
+        // Add in the upper diagonal.
+        if (left == CubicSplineBC::Clamped) {
+            A.insert(0, 1) = oneSixth * (_x[1] - _x[0]);
+        }
+        for (int i = 1; i < n - 1; ++i) {
+            A.insert(i, i + 1) = oneSixth * (_x[i] - _x[i - 1]);
+        }
+
+        // Add in the lower diagonal.
+        for (int i = 0; i < n - 2; ++i) {
+            A.insert(i + 1, i) = oneSixth * (_x[i + 1] - _x[i]);
+        }
+        if (right == CubicSplineBC::Clamped) {
+            A.insert(n - 1, n - 2) = oneSixth * (_x[n - 1] - _x[n - 2]);
+        }
+
+        // Add in the diagonal.
+        if (left == CubicSplineBC::Free) {
+            A.insert(0, 0) = 1;
+        } else {
+            A.insert(0, 0) = oneThird * (_x[1] - _x[0]);
+        }
+        for (int i = 1; i < n - 1; ++i) {
+            A.insert(i, i) = oneThird * (_x[i + 1] - _x[i - 1]);
+        }
+        if (right == CubicSplineBC::Free) {
+            A.insert(n - 1, n - 1) = 1;
+        } else {
+            A.insert(n - 1, n - 1) = oneThird * (_x[n - 1] - _x[n - 2]);
+        }
+
+        // Finalise the matrix construction.
+        A.makeCompressed();
+
+        // Set the right hand side.
+        Vector rhs(n);
+        if (left == CubicSplineBC::Free) {
+            rhs(0) = 0;
+        } else {
+            rhs(0) = (_y[1] - _y[0]) / (_x[1] - _x[0]) - ypl;
+        }
+        for (int i = 1; i < n - 1; i++) {
+            rhs(i) = (_y[i + 1] - _y[i]) / (_x[i + 1] - _x[i]) -
+                     (_y[i] - _y[i - 1]) / (_x[i] - _x[i - 1]);
+        }
+        if (right == CubicSplineBC::Free) {
+            rhs(n - 1) = 0;
+        } else {
+            rhs(n - 1) =
+                ypr - (_y[n - 1] - _y[n - 2]) / (_x[n - 1] - _x[n - 2]);
+        }
+
+        // Solve the linear system.
+        Eigen::SimplicialLDLT<Matrix> solver;
+        solver.compute(A);
+        _ypp = solver.solve(rhs);
+        assert(solver.info() == Eigen::Success);
+    }
+
+    // Constructor for natural spline.
+    CubicSpline(X x, Y y)
+        : CubicSpline(x, y, CubicSplineBC::Free, static_cast<Scalar>(0),
+                      CubicSplineBC::Free, static_cast<Scalar>(0)) {}
+
+    // Constructor when boundary conditions are the same.
+    CubicSpline(X x, Y y, CubicSplineBC both, Scalar ypl, Scalar ypr)
+        : CubicSpline(x, y, both, ypl, both, ypr) {}
+
+    // Evaluate interpolating function.
+    auto operator()(Real x) const {
+        // Find the first element larger than x.
+        auto it = std::ranges::upper_bound(_x, x);
+        // Adjust the iterator if out of range.
+        if (it == _x.begin())
+            ++it;
+        if (it == _x.end())
+            --it;
+        // Perform the interpolation.
+        constexpr auto oneSixth = static_cast<Real>(1) / static_cast<Real>(6);
+        auto i2 = std::distance(_x.begin(), it);
+        auto i1 = i2 - 1;
+        auto x1 = _x[i1];
+        auto x2 = _x[i2];
+        auto h = x2 - x1;
+        auto a = (x2 - x) / h;
+        auto b = (x - x1) / h;
+        return a * _y[i1] + b * _y[i2] +
+               ((a * a * a - a) * _ypp(i1) + (b * b * b - b) * _ypp(i2)) * h *
+                   h * oneSixth;
+    }
+
+    auto Derivative(Real x) const {
+        // Find the first element larger than x.
+        auto it = std::ranges::upper_bound(_x, x);
+        // Adjust the iterator if out of range.
+        if (it == _x.begin())
+            ++it;
+        if (it == _x.end())
+            --it;
+        // Perform the interpolation.
+        constexpr auto oneSixth = static_cast<Real>(1) / static_cast<Real>(6);
+        auto i2 = std::distance(_x.begin(), it);
+        auto i1 = i2 - 1;
+        auto x1 = _x[i1];
+        auto x2 = _x[i2];
+        auto h = x2 - x1;
+        auto a = (x2 - x) / h;
+        auto b = (x - x1) / h;
+        return (_y[i2] - _y[i1]) / h +
+               oneSixth * h *
+                   ((-3 * a * a + 1) * _ypp(i1) + (3 * b * b - 1) * _ypp(i2));
+    }
+
+  private:
+    using Vector = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+    using Matrix = Eigen::SparseMatrix<Scalar>;
+
+    X _x;   // View to the ordinates
+    Y _y;   // View to the values.
+
+    Vector _ypp;   // Cubic spline coefficients
+};
+
+// Deductions guides for construction from ranges.
+template <NC::RealRange X, NC::RealOrComplexRange Y, typename... Args>
+CubicSpline(X &&, Y &&, Args...)
+    -> CubicSpline<std::ranges::views::all_t<X>, std::ranges::views::all_t<Y>>;
+
+}   // namespace Ranges
 
 }   // namespace Interpolation
 

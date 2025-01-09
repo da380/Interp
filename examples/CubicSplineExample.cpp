@@ -18,7 +18,7 @@ main() {
 
     using namespace Interpolation;
 
-    int n = 2;
+    int n = 10;
     std::vector<double> x(n);
     std::vector<double> y(n);
 
@@ -29,10 +29,11 @@ main() {
         y[i] = func(x[i]);
     }
 
-    CubicSpline f(x.begin(), x.end(), y.begin());
+    // auto f = CubicSpline(x.begin(), x.end(), y.begin());
+    auto f = Ranges::CubicSpline(x, y);
 
     int m = 50;
-    std::ofstream file("Linear.out");
+    std::ofstream file("Cubic.out");
     for (int i = 0; i < m; i++) {
         auto x = static_cast<double>(i) / static_cast<double>(m - 1);
         file << x << " " << func(x) << " " << f(x) << std::endl;

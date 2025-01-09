@@ -72,6 +72,73 @@ class Linear {
     yIter _yS;   // Iterator to start of y values.
 };
 
+namespace Ranges {
+
+namespace NC = NumericConcepts;
+template <NC::RealView X, NC::RealOrComplexView Y>
+    requires NC::SameRangePrecision<X, Y>
+class Linear {
+  public:
+    // Define some class member types
+    using Real = std::ranges::range_value_t<X>;
+    using Scalar = std::ranges::range_value_t<Y>;
+
+    // Default constructor.
+    Linear() = default;
+
+    // General constructor.
+    Linear(X x, Y y) : _x{x}, _y{y} {}
+
+    // Evaluate interpolating function.
+    auto operator()(Real x) const {
+        // Find the first element larger than x.
+        auto it = std::ranges::upper_bound(_x, x);
+        // Adjust the iterator if out of range.
+        if (it == _x.begin())
+            ++it;
+        if (it == _x.end())
+            --it;
+        // Perform the interpolation.
+        auto i2 = std::distance(_x.begin(), it);
+        auto i1 = i2 - 1;
+        auto x1 = _x[i1];
+        auto x2 = _x[i2];
+        auto h = x2 - x1;
+        auto a = (x2 - x) / h;
+        auto b = (x - x1) / h;
+        return a * _y[i1] + b * _y[i2];
+    }
+
+    auto Derivative(Real x) const {
+        // Find the first element larger than x.
+        auto it = std::ranges::upper_bound(_x, x);
+        // Adjust the iterator if out of range.
+        if (it == _x.begin())
+            ++it;
+        if (it == _x.end())
+            --it;
+        // Perform the interpolation.
+        auto i2 = std::distance(_x.begin(), it);
+        auto i1 = i2 - 1;
+        auto x1 = _x[i1];
+        auto x2 = _x[i2];
+        auto h = x2 - x1;
+        auto a = (x2 - x) / h;
+        auto b = (x - x1) / h;
+        return (_y[i2] - _y[i1]) / h;
+    }
+
+  private:
+    X _x;   // View to the ordinates
+    Y _y;   // View to the values.
+};
+
+// Deductions guides for construction from ranges.
+template <NC::RealRange X, NC::RealOrComplexRange Y>
+Linear(X &&, Y &&)
+    -> Linear<std::ranges::views::all_t<X>, std::ranges::views::all_t<Y>>;
+}   // namespace Ranges
+
 }   // namespace Interpolation
 
 #endif   //  INTERPOLATION_LINEAR_GUARD_H
